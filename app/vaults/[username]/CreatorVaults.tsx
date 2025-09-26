@@ -205,6 +205,7 @@ export default function CreatorVaults({ data: creatorData }: Props) {
         </Div>
       )}
       <UploadVaultsModal
+        creatorData={creatorData}
         onJobAdded={() => {
           handleRefetch();
           setHasSelectedThirty(false);

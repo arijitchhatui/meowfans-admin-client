@@ -1,7 +1,7 @@
 import { graphql } from '../generated';
 
-export const GET_IMPORT_QUERY = graphql(`
-  query Initiate($input: CreateImportInput!) {
-    initiate(input: $input)
+export const INITIATE_CREATOR_OBJECTS_IMPORT_MUTATION = graphql(`
+  mutation InitiateCreatorObjectsImport($input: CreateImportQueueInput!) {
+    initiateCreatorObjectsImport(input: $input)
   }
 `);
