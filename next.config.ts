@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next';
-import { configService } from './util/config';
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
@@ -20,6 +19,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'avatar.iran.liara.run'
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com'
       }
     ]
   }

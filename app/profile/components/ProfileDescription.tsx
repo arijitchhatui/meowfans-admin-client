@@ -2,11 +2,10 @@ import { SAvatar } from '@/components/Avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { GET_CREATOR_PROFILE_QUERY } from '@/packages/gql/api/creatorAPI';
 import { GetCreatorProfileQuery } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
-import { useQuery } from '@apollo/client/react';
 import { BadgeCheckIcon, Heart } from 'lucide-react';
+import Image from 'next/image';
 
 interface Props {
   creatorInfo?: GetCreatorProfileQuery;
@@ -27,7 +26,13 @@ export const ProfileDescription: React.FC<Props> = ({ creatorInfo }) => {
           </CardAction>
         </CardHeader>
 
-        <Div className={`relative w-full md:h-40 h-20 bg-[url(${creatorInfo?.getCreatorProfile.user.avatarUrl})] bg-center bg-cover rounded-md`} />
+        <Image
+          src={creatorInfo?.getCreatorProfile.user.bannerUrl || './assets/1/jpg'}
+          alt={creatorInfo?.getCreatorProfile.user.username || ''}
+          width={'100'}
+          height={300}
+          className="relative w-full md:h-40 h-20 bg-center bg-cover rounded-md"
+        />
 
         <CardContent className="relative flex justify-between md:justify-center">
           <SAvatar

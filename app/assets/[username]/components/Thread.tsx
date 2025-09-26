@@ -3,26 +3,27 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { GetAllAssetsByAdminQuery } from '@/packages/gql/generated/graphql';
+import { GetCreatorAssetsByAdminQuery } from '@/packages/gql/generated/graphql';
 import { handleFullScreen } from '@/util/helpers';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { FileSliders, Fullscreen } from 'lucide-react';
 import Image from 'next/image';
 
 interface Props {
-  assets?: GetAllAssetsByAdminQuery;
+  hasNext: boolean;
+  assets?: GetCreatorAssetsByAdminQuery;
   onLoadMore: () => unknown;
   onSlideShow: () => unknown;
 }
 
-export const AssetsThread: React.FC<Props> = ({ assets, onLoadMore, onSlideShow }) => {
-  const fullScreenUrls = assets?.getAllAssetsByAdmin.assets.map((creatorAsset) => creatorAsset.asset.rawUrl) || [];
+export const AssetsThread: React.FC<Props> = ({ assets, onLoadMore, onSlideShow, hasNext }) => {
+  const fullScreenUrls = assets?.getCreatorAssetsByAdmin.map((creatorAsset) => creatorAsset.asset.rawUrl) || [];
 
   return (
     <Div className="flex flex-row justify-between gap-1 m-1 ">
       <ScrollArea className={cn('h-[calc(100vh-136px)]', 'w-full')}>
         <div className={cn('grid gap-4 grid-cols-2', 'md:grid-cols-5')}>
-          {assets?.getAllAssetsByAdmin.assets.map((creatorAsset, idx) => (
+          {assets?.getCreatorAssetsByAdmin.map((creatorAsset, idx) => (
             <div key={creatorAsset.id} className="relative flex">
               <Div className="flex flex-col justify-between">
                 <Button className="absolute top-0 left-0 bg-transparent" size={'icon'} onClick={onSlideShow}>
@@ -51,11 +52,17 @@ export const AssetsThread: React.FC<Props> = ({ assets, onLoadMore, onSlideShow 
             </div>
           ))}
         </div>
-        {assets && assets?.getAllAssetsByAdmin.assets.length >= 10 && (
-          <Div className="flex justify-center mx-auto p-0 m-0">
-            <Button className="" onClick={onLoadMore}>
-              Load More
-            </Button>
+        {hasNext ? (
+          <Div className="flex items-center justify-center space-x-2">
+            <Div className="space-x-2">
+              <Button variant="outline" size="sm" onClick={onLoadMore}>
+                Next
+              </Button>
+            </Div>
+          </Div>
+        ) : (
+          <Div className="text-center tracking-tight py-4">
+            <p>Looks like you have reached at the end!</p>
           </Div>
         )}
       </ScrollArea>
