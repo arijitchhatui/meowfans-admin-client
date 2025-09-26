@@ -23,32 +23,32 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet';
 import { HostNames } from '@/lib/constants';
-import { GET_IMPORT_QUERY } from '@/packages/gql/api/importAPI';
+import { INITIATE_CREATOR_OBJECTS_IMPORT_MUTATION } from '@/packages/gql/api/importAPI';
 import { GET_USER_QUERY } from '@/packages/gql/api/userAPI';
 import { DocumentQualityType, FileType, GetUserQuery, ImportTypes } from '@/packages/gql/generated/graphql';
-import { useLazyQuery } from '@apollo/client/react';
+import { useLazyQuery, useMutation } from '@apollo/client/react';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export const ImportSheet = () => {
   const { username } = useParams();
-  const [initiateImport] = useLazyQuery(GET_IMPORT_QUERY);
-  const [isOpen, setIsOpen] = useState<boolean>(true);
   const [url, setUrl] = useState<string>('');
   const [start, setStart] = useState<number>(0);
+  const [getUser] = useLazyQuery(GET_USER_QUERY);
   const [exclude, setExclude] = useState<number>(0);
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [creator, setCreator] = useState<GetUserQuery>();
   const [loading, setLoading] = useState<boolean>(false);
   const [exceptions, setExceptions] = useState<string[]>([]);
   const [totalContent, setTotalContent] = useState<number>(0);
   const [subDirectory, setSubDirectory] = useState<string>('');
+  const [exceptionInput, setExceptionInput] = useState<string>('');
   const [fileType, setFileType] = useState<FileType>(FileType.Image);
   const [hasEditedSubDir, setHasEditedSubDir] = useState<boolean>(false);
   const [importType, setImportType] = useState<ImportTypes>(ImportTypes.Profile);
-  const [exceptionInput, setExceptionInput] = useState<string>('');
+  const [initiateImport] = useMutation(INITIATE_CREATOR_OBJECTS_IMPORT_MUTATION);
   const [qualityType, setQualityType] = useState<DocumentQualityType>(DocumentQualityType.HighDefinition);
-  const [getUser] = useLazyQuery(GET_USER_QUERY);
-  const [creator, setCreator] = useState<GetUserQuery>();
 
   const handleGetUser = async () => {
     if (username) {
@@ -60,9 +60,11 @@ export const ImportSheet = () => {
   const handleInitiate = async () => {
     setLoading(true);
     try {
+      if (!creator?.getUser.id) return;
       await initiateImport({
         variables: {
           input: {
+            creatorId: creator?.getUser.id,
             url: url.trim(),
             fileType,
             qualityType,
@@ -128,7 +130,7 @@ export const ImportSheet = () => {
   }, [username]); //eslint-disable-line
 
   return (
-    <Sheet onOpenChange={(open) => (open ? setSubDirectory(username as string || '') : handleClose())}>
+    <Sheet onOpenChange={(open) => (open ? setSubDirectory((username as string) || '') : handleClose())}>
       <SheetTrigger asChild>
         <Button variant="outline">Import</Button>
       </SheetTrigger>

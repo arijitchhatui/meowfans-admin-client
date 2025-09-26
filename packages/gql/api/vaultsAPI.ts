@@ -1,8 +1,8 @@
 import { graphql } from '../generated';
 
-export const UPLOAD_TO_VAULT_MUTATION = graphql(`
-  mutation UploadVault($input: UploadVaultInput!) {
-    uploadVault(input: $input)
+export const DOWNLOAD_CREATOR_OBJECTS_AS_BATCH_MUTATION = graphql(`
+  mutation DownloadCreatorObjectsAsBatch($input: UploadVaultQueueInput!) {
+    downloadCreatorObjectsAsBatch(input: $input)
   }
 `);
 

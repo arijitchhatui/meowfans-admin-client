@@ -38,7 +38,7 @@ type Documents = {
     "\n  query GetRestrictedUsers($input: PaginationInput!) {\n    getRestrictedUsers(input: $input) {\n      creatorId\n      fanId\n      id\n      restrictedAt\n      unRestrictedAt\n      fanProfile {\n        fanId\n        user {\n          avatarUrl\n          firstName\n          lastName\n          username\n        }\n      }\n    }\n  }\n": typeof types.GetRestrictedUsersDocument,
     "\n  query getFanProfile {\n    getFanProfile {\n      fanId\n      appliedAt\n      user {\n        firstName\n        lastName\n        username\n        avatarUrl\n        bannerUrl\n      }\n    }\n  }\n": typeof types.GetFanProfileDocument,
     "\n  mutation UpdateFanProfile($input:UpdateUserProfileInput!) {\n    updateFanProfile(input:$input) {\n      appliedAt\n      createdAt\n      deletedAt\n      fanId\n      isBanned\n      updatedAt\n      user {\n        avatarUrl\n        bannerUrl\n        createdAt\n        deletedAt\n        firstName\n        id\n        lastLoginAt\n        lastName\n        roles\n        updatedAt\n        username\n      }\n    }\n  }\n": typeof types.UpdateFanProfileDocument,
-    "\n  query Initiate($input: CreateImportInput!) {\n    initiate(input: $input)\n  }\n": typeof types.InitiateDocument,
+    "\n  mutation InitiateCreatorObjectsImport($input: CreateImportQueueInput!) {\n    initiateCreatorObjectsImport(input: $input)\n  }\n": typeof types.InitiateCreatorObjectsImportDocument,
     "\n  query GetPosts($input: PaginationInput!) {\n    getPosts(input: $input) {\n      caption\n      commentCount\n      createdAt\n      creatorId\n      deletedAt\n      id\n      lastCommentId\n      likeCount\n      saveCount\n      shareCount\n      totalEarning\n      types\n      unlockPrice\n      updatedAt\n    }\n  }\n": typeof types.GetPostsDocument,
     "\n  query GetPostsInfo($input: PaginationInput!) {\n    getPostsInfo(input: $input) {\n      caption\n      commentCount\n      createdAt\n      creatorId\n      deletedAt\n      id\n      lastCommentId\n      latestComment\n      likeCount\n      saveCount\n      shareCount\n      totalEarning\n      types\n      unlockPrice\n      updatedAt\n    }\n  }\n": typeof types.GetPostsInfoDocument,
     "\n  mutation CreatePost($input: CreatePostInput!) {\n    createPost(input: $input) {\n      caption\n      commentCount\n      createdAt\n      creatorId\n      deletedAt\n      id\n      lastCommentId\n      likeCount\n      saveCount\n      shareCount\n      totalEarning\n      types\n      unlockPrice\n      updatedAt\n    }\n  }\n": typeof types.CreatePostDocument,
@@ -52,7 +52,7 @@ type Documents = {
     "\n  mutation SavePost($input: SavePostInput!) {\n    savePost(input: $input) {\n      caption\n      commentCount\n      createdAt\n      creatorId\n      deletedAt\n      id\n      likeCount\n      saveCount\n      shareCount\n      totalEarning\n      types\n      unlockPrice\n      updatedAt\n    }\n  }\n": typeof types.SavePostDocument,
     "\n  mutation DeleteUser {\n    deleteUser\n  }\n": typeof types.DeleteUserDocument,
     "\n  query GetUser($username: String!) {\n    getUser(username: $username) {\n      avatarUrl\n      bannerUrl\n      createdAt\n      deletedAt\n      firstName\n      id\n      lastLoginAt\n      lastName\n      roles\n      updatedAt\n      username\n    }\n  }\n": typeof types.GetUserDocument,
-    "\n  mutation UploadVault($input: UploadVaultInput!) {\n    uploadVault(input: $input)\n  }\n": typeof types.UploadVaultDocument,
+    "\n  mutation DownloadCreatorObjectsAsBatch($input: UploadVaultQueueInput!) {\n    downloadCreatorObjectsAsBatch(input: $input)\n  }\n": typeof types.DownloadCreatorObjectsAsBatchDocument,
     "\n  mutation Terminate {\n    terminate\n  }\n": typeof types.TerminateDocument,
 };
 const documents: Documents = {
@@ -80,7 +80,7 @@ const documents: Documents = {
     "\n  query GetRestrictedUsers($input: PaginationInput!) {\n    getRestrictedUsers(input: $input) {\n      creatorId\n      fanId\n      id\n      restrictedAt\n      unRestrictedAt\n      fanProfile {\n        fanId\n        user {\n          avatarUrl\n          firstName\n          lastName\n          username\n        }\n      }\n    }\n  }\n": types.GetRestrictedUsersDocument,
     "\n  query getFanProfile {\n    getFanProfile {\n      fanId\n      appliedAt\n      user {\n        firstName\n        lastName\n        username\n        avatarUrl\n        bannerUrl\n      }\n    }\n  }\n": types.GetFanProfileDocument,
     "\n  mutation UpdateFanProfile($input:UpdateUserProfileInput!) {\n    updateFanProfile(input:$input) {\n      appliedAt\n      createdAt\n      deletedAt\n      fanId\n      isBanned\n      updatedAt\n      user {\n        avatarUrl\n        bannerUrl\n        createdAt\n        deletedAt\n        firstName\n        id\n        lastLoginAt\n        lastName\n        roles\n        updatedAt\n        username\n      }\n    }\n  }\n": types.UpdateFanProfileDocument,
-    "\n  query Initiate($input: CreateImportInput!) {\n    initiate(input: $input)\n  }\n": types.InitiateDocument,
+    "\n  mutation InitiateCreatorObjectsImport($input: CreateImportQueueInput!) {\n    initiateCreatorObjectsImport(input: $input)\n  }\n": types.InitiateCreatorObjectsImportDocument,
     "\n  query GetPosts($input: PaginationInput!) {\n    getPosts(input: $input) {\n      caption\n      commentCount\n      createdAt\n      creatorId\n      deletedAt\n      id\n      lastCommentId\n      likeCount\n      saveCount\n      shareCount\n      totalEarning\n      types\n      unlockPrice\n      updatedAt\n    }\n  }\n": types.GetPostsDocument,
     "\n  query GetPostsInfo($input: PaginationInput!) {\n    getPostsInfo(input: $input) {\n      caption\n      commentCount\n      createdAt\n      creatorId\n      deletedAt\n      id\n      lastCommentId\n      latestComment\n      likeCount\n      saveCount\n      shareCount\n      totalEarning\n      types\n      unlockPrice\n      updatedAt\n    }\n  }\n": types.GetPostsInfoDocument,
     "\n  mutation CreatePost($input: CreatePostInput!) {\n    createPost(input: $input) {\n      caption\n      commentCount\n      createdAt\n      creatorId\n      deletedAt\n      id\n      lastCommentId\n      likeCount\n      saveCount\n      shareCount\n      totalEarning\n      types\n      unlockPrice\n      updatedAt\n    }\n  }\n": types.CreatePostDocument,
@@ -94,7 +94,7 @@ const documents: Documents = {
     "\n  mutation SavePost($input: SavePostInput!) {\n    savePost(input: $input) {\n      caption\n      commentCount\n      createdAt\n      creatorId\n      deletedAt\n      id\n      likeCount\n      saveCount\n      shareCount\n      totalEarning\n      types\n      unlockPrice\n      updatedAt\n    }\n  }\n": types.SavePostDocument,
     "\n  mutation DeleteUser {\n    deleteUser\n  }\n": types.DeleteUserDocument,
     "\n  query GetUser($username: String!) {\n    getUser(username: $username) {\n      avatarUrl\n      bannerUrl\n      createdAt\n      deletedAt\n      firstName\n      id\n      lastLoginAt\n      lastName\n      roles\n      updatedAt\n      username\n    }\n  }\n": types.GetUserDocument,
-    "\n  mutation UploadVault($input: UploadVaultInput!) {\n    uploadVault(input: $input)\n  }\n": types.UploadVaultDocument,
+    "\n  mutation DownloadCreatorObjectsAsBatch($input: UploadVaultQueueInput!) {\n    downloadCreatorObjectsAsBatch(input: $input)\n  }\n": types.DownloadCreatorObjectsAsBatchDocument,
     "\n  mutation Terminate {\n    terminate\n  }\n": types.TerminateDocument,
 };
 
@@ -211,7 +211,7 @@ export function graphql(source: "\n  mutation UpdateFanProfile($input:UpdateUser
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Initiate($input: CreateImportInput!) {\n    initiate(input: $input)\n  }\n"): (typeof documents)["\n  query Initiate($input: CreateImportInput!) {\n    initiate(input: $input)\n  }\n"];
+export function graphql(source: "\n  mutation InitiateCreatorObjectsImport($input: CreateImportQueueInput!) {\n    initiateCreatorObjectsImport(input: $input)\n  }\n"): (typeof documents)["\n  mutation InitiateCreatorObjectsImport($input: CreateImportQueueInput!) {\n    initiateCreatorObjectsImport(input: $input)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -267,7 +267,7 @@ export function graphql(source: "\n  query GetUser($username: String!) {\n    ge
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation UploadVault($input: UploadVaultInput!) {\n    uploadVault(input: $input)\n  }\n"): (typeof documents)["\n  mutation UploadVault($input: UploadVaultInput!) {\n    uploadVault(input: $input)\n  }\n"];
+export function graphql(source: "\n  mutation DownloadCreatorObjectsAsBatch($input: UploadVaultQueueInput!) {\n    downloadCreatorObjectsAsBatch(input: $input)\n  }\n"): (typeof documents)["\n  mutation DownloadCreatorObjectsAsBatch($input: UploadVaultQueueInput!) {\n    downloadCreatorObjectsAsBatch(input: $input)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
