@@ -1,0 +1,34 @@
+name: ESLint
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  eslint:
+    name: Run eslint scanning
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Packages
+        run: npm install
+
+      - name: Lint Check
+        run: npm run start:lint
+
+      - name: Start build
+        run: npm run start:build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_API_GRAPHQL_URL: ${{ secrets.NEXT_PUBLIC_API_GRAPHQL_URL }}
+          NEXT_PUBLIC_AUTH_URL: ${{ secrets.NEXT_PUBLIC_AUTH_URL }}
+          NEXT_PUBLIC_CREATOR_URL: ${{ secrets.NEXT_PUBLIC_CREATOR_URL }}
+          NEXT_PUBLIC_FAN_URL: ${{ secrets.NEXT_PUBLIC_FAN_URL }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          NEXT_PUBLIC_APP_DOMAINS: ${{ secrets.NEXT_PUBLIC_APP_DOMAINS }}
