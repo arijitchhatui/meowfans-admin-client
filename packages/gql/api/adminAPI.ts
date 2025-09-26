@@ -55,6 +55,7 @@ export const GET_ALL_CREATORS_QUERY = graphql(`
         updatedAt
         username
         vaultCount
+        assetCount
       }
     }
   }
@@ -86,6 +87,27 @@ export const GET_CREATORS_ASSETS_QUERY = graphql(`
       deletedAt
       id
       type
+      asset {
+        blurredUrl
+        createdAt
+        creatorId
+        fileType
+        id
+        mediaType
+        mimeType
+        rawUrl
+        updatedAt
+      }
+      creatorProfile {
+        creatorId
+        bio
+        displayOnlineStatus
+        user {
+          avatarUrl
+          id
+          username
+        }
+      }
     }
   }
 `);

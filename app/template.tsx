@@ -12,9 +12,10 @@ interface Props {
 
 export default function RootTemplate({ children }: Props) {
   const pathname = usePathname();
-  const { id: channelId, username } = useParams();
+  const { channelId, username } = useParams();
 
-  if (![...authenticatedPaths, `/channels/${channelId}`, `/vaults/${username}`].includes(pathname)) return <Div>{children}</Div>;
+  if (![...authenticatedPaths, `/channels/${channelId}`, `/vaults/${username}`, `/assets/${username}`].includes(pathname))
+    return <Div>{children}</Div>;
 
   return (
     <Div>

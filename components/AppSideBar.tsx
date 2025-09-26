@@ -22,8 +22,13 @@ export const AppSidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { setOpen } = useSidebar();
-  const { id: channelId, username } = useParams();
-  const isNotAuthenticated = !authenticatedPaths.includes(pathname) && !pathname.startsWith('/channels') && !pathname.startsWith('/vaults');
+  const { channelId, username } = useParams();
+  const isNotAuthenticated =
+    !authenticatedPaths.includes(pathname) &&
+    !pathname.startsWith('/channels') &&
+    !pathname.startsWith('/vaults') &&
+    !pathname.startsWith('/assets');
+
   if (isNotAuthenticated) return null;
 
   const handlePathName = () => {
@@ -32,6 +37,8 @@ export const AppSidebar = () => {
         return '/channels';
       case `/vaults/${username}`:
         return '/vaults';
+      case `/assets/${username}`:
+        return '/assets';
       default:
         return pathname;
     }

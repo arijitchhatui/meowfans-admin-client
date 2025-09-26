@@ -52,6 +52,19 @@ export const decodeJwtToken = (token?: string): JwtUser | null => {
   }
 };
 
+export const useCanonicalPathName = (pathname: string) => {
+  switch (pathname) {
+    case `/channels/${pathname}`:
+      return '/channels';
+    case `/assets/${pathname}`:
+      return '/assets';
+    case `/vaults/${pathname}`:
+      return '/vaults';
+    default:
+      return pathname;
+  }
+};
+
 export type buttonSize = 'default' | 'lg' | 'sm' | 'icon';
 export type buttonVariant = 'link' | 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | null;
 
