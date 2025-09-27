@@ -22,18 +22,17 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@/components/ui/sheet';
+import { Switch } from '@/components/ui/switch';
 import { HostNames } from '@/lib/constants';
 import { INITIATE_SINGLE_CREATOR_IMPORT_QUERY } from '@/packages/gql/api/importAPI';
 import { DocumentQualityType, FileType, ImportTypes } from '@/packages/gql/generated/graphql';
 import { useUserStore } from '@/zustand/user.store';
 import { useMutation } from '@apollo/client/react';
-import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export const ImportCreatorsSheet = () => {
   const { user } = useUserStore();
-  const { username } = useParams();
   const [url, setUrl] = useState<string>('');
   const [start, setStart] = useState<number>(0);
   const [exclude, setExclude] = useState<number>(0);
@@ -42,10 +41,11 @@ export const ImportCreatorsSheet = () => {
   const [totalContent, setTotalContent] = useState<number>(0);
   const [subDirectory, setSubDirectory] = useState<string>('');
   const [exceptionInput, setExceptionInput] = useState<string>('');
+  const [isNewCreator, setIsNewCreator] = useState<boolean>(false);
   const [fileType, setFileType] = useState<FileType>(FileType.Image);
   const [hasEditedSubDir, setHasEditedSubDir] = useState<boolean>(false);
   const [initiateImport] = useMutation(INITIATE_SINGLE_CREATOR_IMPORT_QUERY);
-  const [importType, setImportType] = useState<ImportTypes>(ImportTypes.Profile);
+  const [importType, setImportType] = useState<ImportTypes>(ImportTypes.Page);
   const [qualityType, setQualityType] = useState<DocumentQualityType>(DocumentQualityType.HighDefinition);
 
   const handleInitiate = async () => {
@@ -63,7 +63,8 @@ export const ImportCreatorsSheet = () => {
             exclude,
             importType,
             start,
-            exceptions
+            exceptions,
+            isNewCreator
           }
         }
       });
@@ -89,10 +90,11 @@ export const ImportCreatorsSheet = () => {
     setQualityType(DocumentQualityType.HighDefinition);
     setTotalContent(0);
     setSubDirectory('');
-    setImportType(ImportTypes.Profile);
+    setImportType(ImportTypes.Page);
     setHasEditedSubDir(false);
     setStart(0);
     setExclude(0);
+    setIsNewCreator(false);
     setExceptions([]);
   };
 
@@ -101,7 +103,7 @@ export const ImportCreatorsSheet = () => {
       const parts = url.split('/').filter(Boolean);
       setSubDirectory(parts.at(-1) ?? '');
     }
-  }, [url, hasEditedSubDir, username]);
+  }, [url, hasEditedSubDir]);
 
   useEffect(() => {
     const regex = /^https:\/\/[^\s/$.?#].[^\s]*$/i;
@@ -114,7 +116,7 @@ export const ImportCreatorsSheet = () => {
   }, [url]);
 
   return (
-    <Sheet onOpenChange={(open) => (open ? setSubDirectory((username as string) || '') : handleClose())}>
+    <Sheet onOpenChange={handleClose}>
       <SheetTrigger asChild>
         <Button variant="outline">Import</Button>
       </SheetTrigger>
@@ -135,21 +137,34 @@ export const ImportCreatorsSheet = () => {
               onChange={(e) => setUrl(e.target.value)}
             />
           </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="subDirectory">Subdirectory</Label>
-            <Input
-              id="subDirectory"
-              type="text"
-              placeholder="chris"
-              required
-              autoComplete="subDirectory"
-              value={subDirectory}
-              onChange={(e) => {
-                setSubDirectory(e.target.value);
-                setHasEditedSubDir(e.target.value.trim() !== '');
-              }}
-            />
+          <div className="flex flex-row gap-3 space-y-1">
+            <div className="grid gap-2">
+              <Label htmlFor="subDirectory">Subdirectory</Label>
+              <Input
+                id="subDirectory"
+                type="text"
+                placeholder="chris"
+                required
+                autoComplete="subDirectory"
+                value={subDirectory}
+                onChange={(e) => {
+                  setSubDirectory(e.target.value);
+                  setHasEditedSubDir(e.target.value.trim() !== '');
+                }}
+              />
+            </div>
+            <div className="flex flex-col gap-1 space-y-1 items-center content-center">
+              <Label htmlFor="newUser" className="text-xs">
+                NewCreator
+              </Label>
+              <Switch
+                checked={isNewCreator}
+                onCheckedChange={(checked) => {
+                  setIsNewCreator(checked);
+                  setImportType(ImportTypes.Profile);
+                }}
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 space-x-2">
@@ -178,20 +193,26 @@ export const ImportCreatorsSheet = () => {
           </div>
 
           <div className="flex flex-col space-y-2">
-            <div className="grid grid-cols-2 space-x-2">
+            <div className="grid grid-cols-2 space-x-1">
               <div className="grid gap-2">
                 <Label htmlFor="quality-type">Quality type</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline">{qualityType.replace(/_/g, ' ')}</Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
+                  <DropdownMenuContent className="w-36">
                     <DropdownMenuLabel>Quality types</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuRadioGroup value={qualityType} onValueChange={(val) => setQualityType(val as DocumentQualityType)}>
-                      <DropdownMenuRadioItem value={DocumentQualityType.HighDefinition}>High</DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value={DocumentQualityType.LowDefinition}>Low</DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value={DocumentQualityType.DefaultDefinition}>Default</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem className="text-xs" value={DocumentQualityType.HighDefinition}>
+                        High
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem className="text-xs" value={DocumentQualityType.LowDefinition}>
+                        Low
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem className="text-xs" value={DocumentQualityType.DefaultDefinition}>
+                        Default
+                      </DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -203,7 +224,7 @@ export const ImportCreatorsSheet = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline">{fileType.replace(/_/g, ' ')}</Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
+                  <DropdownMenuContent className="w-36">
                     <DropdownMenuLabel>File types</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuRadioGroup value={fileType} onValueChange={(val) => setFileType(val as FileType)}>

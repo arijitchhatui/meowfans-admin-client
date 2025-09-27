@@ -56,6 +56,9 @@ export const GET_ALL_CREATORS_QUERY = graphql(`
         username
         vaultCount
         assetCount
+        fulfilledObjectCount
+        pendingObjectCount
+        processingObjectCount
       }
     }
   }
