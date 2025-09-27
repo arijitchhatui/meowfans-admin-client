@@ -11,3 +11,9 @@ export const TERMINATE_ALL_JOBS_MUTATION = graphql(`
     terminate
   }
 `);
+
+export const GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY = graphql(`
+  query GetTotalObjectsAsType($input: PaginationInput!) {
+    getTotalObjectsAsType(input: $input)
+  }
+`);

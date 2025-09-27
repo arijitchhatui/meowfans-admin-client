@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DownloadStates, VaultObjectsEntity } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
-import { useVaultsStore } from '@/zustand/vaults.store';
 import { Download } from 'lucide-react';
 import moment from 'moment';
 
@@ -18,7 +17,7 @@ interface Props {
 
 export const CreatorVaultUrls: React.FC<Props> = ({ idx, vaultObject, selectedUrls, onToggle, isLoading }) => {
   return (
-    <div className='h-full'>
+    <div className="h-full">
       <Div className="flex flex-row justify-between">
         <Div className="flex flex-row space-x-1.5">
           <SAvatar url={vaultObject.vault.creatorProfile.user.avatarUrl} />

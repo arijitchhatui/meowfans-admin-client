@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ExtendedUsersEntity } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { useVaultsStore } from '@/zustand/vaults.store';
-import { Download, Goal } from 'lucide-react';
+import { ArrowUpRight, Download } from 'lucide-react';
 import moment from 'moment';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -25,12 +25,21 @@ export const VaultUrls: React.FC<Props> = ({ idx, creator }) => {
       <Div className="flex flex-row justify-between w-full">
         <div className="flex flex-row space-x-1.5">
           <Badge variant="secondary">{idx + 1}</Badge>
+          <SAvatar url={creator.avatarUrl} fallback="cr" />
+        </div>
+        <div className="flex flex-row gap-1">
+          <Badge className="text-xs font-medium bg-blue-500 text-white">{creator.fulfilledObjectCount}</Badge>
+          <Badge className="text-xs font-medium animate-pulse">{creator.pendingObjectCount}</Badge>
+          <Badge className="text-xs font-medium bg-orange-500 text-white dark:bg-emerald-400">{creator.processingObjectCount}</Badge>
+        </div>
+      </Div>
+      <Div className="flex flex-row justify-between w-full content-center items-center">
+        <div className="flex flex-row">
           <Badge className="text-xs font-medium">{creator.username}</Badge>
         </div>
-        <div className="flex flex-row gap-5">
-          <SAvatar url={creator.avatarUrl} fallback="cr" />
+        <div className="flex flex-row space-x-1.5">
           <ApplyButtonTooltip
-            buttonProps={{ icon: Goal, variant: 'outline' }}
+            buttonProps={{ icon: ArrowUpRight, variant: 'outline' }}
             onClick={() => {
               setCreator(creator);
               router.push(`/vaults/${creator.username}`);
@@ -40,9 +49,6 @@ export const VaultUrls: React.FC<Props> = ({ idx, creator }) => {
         </div>
       </Div>
       <Div className="flex flex-row justify-between w-full content-center items-center">
-        <div className="flex flex-row">
-          <p className="text-xs">{moment(creator.createdAt).format('LT L')}</p>
-        </div>
         <div className="flex flex-row space-x-1.5">
           <LoadingButton
             Icon={Download}
@@ -51,6 +57,9 @@ export const VaultUrls: React.FC<Props> = ({ idx, creator }) => {
             disabled={!creator.vaultCount}
             onClick={() => setDownloadAllCreatorVaultsModal(true)}
           />
+        </div>
+        <div className="flex flex-row">
+          <p className="text-xs">{moment(creator.createdAt).format('LT L')}</p>
         </div>
       </Div>
       <DownloadCreatorsAllVaultsModal

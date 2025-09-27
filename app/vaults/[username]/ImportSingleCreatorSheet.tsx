@@ -37,7 +37,6 @@ export const ImportSingleCreatorSheet = () => {
   const [start, setStart] = useState<number>(0);
   const [getUser] = useLazyQuery(GET_USER_QUERY);
   const [exclude, setExclude] = useState<number>(0);
-  const [isOpen, setIsOpen] = useState<boolean>(true);
   const [creator, setCreator] = useState<GetUserQuery>();
   const [loading, setLoading] = useState<boolean>(false);
   const [exceptions, setExceptions] = useState<string[]>([]);
@@ -93,7 +92,6 @@ export const ImportSingleCreatorSheet = () => {
   };
 
   const handleClose = () => {
-    setIsOpen(false);
     setLoading(false);
     setUrl('');
     setFileType(FileType.Image);
@@ -108,12 +106,11 @@ export const ImportSingleCreatorSheet = () => {
   };
 
   useEffect(() => {
-    if (creator || username) setSubDirectory(creator?.getUser.username || (username as string));
-    else if (!hasEditedSubDir && url) {
+    if (!hasEditedSubDir && url) {
       const parts = url.split('/').filter(Boolean);
       setSubDirectory(parts.at(-1) ?? '');
     }
-  }, [url, hasEditedSubDir, username, creator]);
+  }, [url, hasEditedSubDir]);
 
   useEffect(() => {
     const regex = /^https:\/\/[^\s/$.?#].[^\s]*$/i;
@@ -130,13 +127,13 @@ export const ImportSingleCreatorSheet = () => {
   }, [username]); //eslint-disable-line
 
   return (
-    <Sheet onOpenChange={(open) => (open ? setSubDirectory((username as string) || '') : handleClose())}>
+    <Sheet onOpenChange={handleClose}>
       <SheetTrigger asChild>
         <Button variant="outline">Import</Button>
       </SheetTrigger>
       <SheetContent className="p-1">
         <SheetHeader>
-          <SheetTitle>Add new contents {creator && creator?.getUser.username}</SheetTitle>
+          <SheetTitle>Add new contents to {creator && creator?.getUser.username.toUpperCase()}</SheetTitle>
           <SheetDescription>
             {creator ? `You are importing to ${creator.getUser.username}` : 'Be descriptive about site information'}
           </SheetDescription>
