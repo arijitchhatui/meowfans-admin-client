@@ -18,7 +18,7 @@ interface Props {
 
 export const CreatorVaultUrls: React.FC<Props> = ({ idx, vaultObject, selectedUrls, onToggle, isLoading }) => {
   return (
-    <>
+    <div className='h-full'>
       <Div className="flex flex-row justify-between">
         <Div className="flex flex-row space-x-1.5">
           <SAvatar url={vaultObject.vault.creatorProfile.user.avatarUrl} />
@@ -78,6 +78,6 @@ export const CreatorVaultUrls: React.FC<Props> = ({ idx, vaultObject, selectedUr
           <LoadingButton size="icon" variant={'outline'} className="cursor-pointer animate-bounce" Icon={Download} loading />
         )}
       </Div>
-    </>
+    </div>
   );
 };

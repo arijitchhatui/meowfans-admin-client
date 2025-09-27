@@ -11,7 +11,8 @@ export const AppBottomNav = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  if (!isMobile || !authenticatedPaths.includes(pathname)) return null;
+  if (!isMobile || (!authenticatedPaths.includes(pathname) && !pathname.startsWith('/vaults') && !pathname.startsWith('/channels')))
+    return null;
 
   return (
     <Div className="w-full bg-white dark:bg-black rounded-xl fixed bottom-0 h-16 z-50">

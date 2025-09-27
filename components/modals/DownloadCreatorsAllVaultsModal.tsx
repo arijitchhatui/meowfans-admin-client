@@ -5,7 +5,7 @@ import { AssetType, ExtendedUsersEntity } from '@/packages/gql/generated/graphql
 import { Div } from '@/wrappers/HTMLWrappers';
 import { useMutation } from '@apollo/client/react';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { LoadingButton } from '../LoadingButton';
 import { Button } from '../ui/button';
 import {

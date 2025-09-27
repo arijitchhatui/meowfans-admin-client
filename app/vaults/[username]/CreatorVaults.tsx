@@ -8,9 +8,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { GET_CREATOR_VAULT_OBJECTS_QUERY } from '@/packages/gql/api/adminAPI';
 import { DownloadStates, GetUserQuery } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
+import { PageWrapper } from '@/wrappers/PageWrapper';
 import { useQuery } from '@apollo/client/react';
-import { Download, Funnel, LucideLassoSelect, RefreshCcw } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ArrowBigDown, ArrowBigUp, Download, Funnel, LucideLassoSelect, RefreshCcw } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,15 +28,18 @@ interface Props {
 }
 
 export default function CreatorVaults({ data: creatorData }: Props) {
-  const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
-  const [hasSelectedThirty, setHasSelectedThirty] = useState<boolean>(false);
-  const [uploadVaultModal, setUploadVaultModal] = useState<boolean>(false);
-  const [status, setStatus] = useState<DownloadStates>(DownloadStates.Pending);
+  const LIMIT = 450;
+  const topRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
   const [hasNext, setHasNext] = useState<boolean>(false);
+  const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
+  const [uploadVaultModal, setUploadVaultModal] = useState<boolean>(false);
+  const [hasSelectedThirty, setHasSelectedThirty] = useState<boolean>(false);
+  const [status, setStatus] = useState<DownloadStates>(DownloadStates.Pending);
 
   const { data, refetch, fetchMore, loading } = useQuery(GET_CREATOR_VAULT_OBJECTS_QUERY, {
     variables: {
-      input: { limit: 100, offset: 0, status: status, relatedUserId: creatorData?.getUser.id }
+      input: { limit: 50, offset: 0, status: status, relatedUserId: creatorData?.getUser.id }
     }
   });
 
@@ -50,7 +54,7 @@ export default function CreatorVaults({ data: creatorData }: Props) {
       variables: {
         input: {
           offset: data?.getCreatorVaultObjectsByAdmin.vaultObjects.length,
-          limit: 100,
+          limit: LIMIT,
           status: status,
           relatedUserId: creatorData?.getUser.id
         }
@@ -92,6 +96,18 @@ export default function CreatorVaults({ data: creatorData }: Props) {
     );
   };
 
+  const handleScrollToTheBottom = () => {
+    requestAnimationFrame(() => {
+      bottomRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
+    });
+  };
+
+  const handleScrollToTheTop = () => {
+    requestAnimationFrame(() => {
+      topRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+  };
+
   useEffect(() => {
     setDataLength(data?.getCreatorVaultObjectsByAdmin.count || 0);
   }, [loading, status]); //eslint-disable-line
@@ -104,10 +120,14 @@ export default function CreatorVaults({ data: creatorData }: Props) {
     handleRefetch();
   }, [status]); //eslint-disable-line
 
+  useEffect(() => {
+    if (hasNext) handleScrollToTheBottom();
+  }, [data?.getCreatorVaultObjectsByAdmin.vaultObjects.length, hasNext]);
+
   return (
-    <Div className="w-full">
+    <PageWrapper className="w-full">
       <Div className="flex items-center justify-between space-x-1 sticky top-15 z-50">
-        <Div className="flex flex-row space-x-2">
+        <Div className="flex flex-row space-x-2 z-50">
           <Button>{dataLength}</Button>
           <div className="grid gap-2">
             <DropdownMenu>
@@ -172,33 +192,45 @@ export default function CreatorVaults({ data: creatorData }: Props) {
           </Button>
         </Div>
       </Div>
+
       {data?.getCreatorVaultObjectsByAdmin.vaultObjects.length ? (
-        <ScrollArea className="overflow-y-auto h-[calc(100vh-140px)] w-full p-1">
-          {data?.getCreatorVaultObjectsByAdmin.vaultObjects.map((vaultObject, idx) => (
-            <Div key={idx} className="flex flex-col rounded-md border my-1 p-2">
-              <CreatorVaultUrls
-                idx={idx}
-                isLoading={loading}
-                onToggle={(id) => handleToggle(id)}
-                selectedUrls={selectedUrls}
-                vaultObject={Object.assign(vaultObject)}
-              />
-            </Div>
-          ))}
-          {hasNext ? (
-            <Div className="flex items-center justify-center space-x-2">
-              <Div className="space-x-2">
-                <Button variant="outline" size="sm" onClick={handleFetchMore}>
-                  Next
-                </Button>
+        <div className="relative h-full">
+          <ScrollArea className="h-[calc(100vh-140px)] w-full p-1">
+            <div ref={topRef} className="p-0" />
+            {data?.getCreatorVaultObjectsByAdmin.vaultObjects.map((vaultObject, idx) => (
+              <Div key={idx} className="flex flex-col rounded-md border my-1 p-2">
+                <CreatorVaultUrls
+                  idx={idx}
+                  isLoading={loading}
+                  onToggle={(id) => handleToggle(id)}
+                  selectedUrls={selectedUrls}
+                  vaultObject={Object.assign(vaultObject)}
+                />
               </Div>
-            </Div>
-          ) : (
-            <Div className="text-center tracking-tight py-4">
-              <p>Looks like you have reached at the end!</p>
-            </Div>
-          )}
-        </ScrollArea>
+            ))}
+
+            {hasNext ? (
+              <Div className="flex items-center justify-center space-x-2">
+                <Div className="space-x-2">
+                  <Button variant="outline" size="sm" onClick={handleFetchMore}>
+                    Next
+                  </Button>
+                </Div>
+              </Div>
+            ) : (
+              <Div className="text-center tracking-tight py-4">
+                <p>Looks like you have reached at the end!</p>
+              </Div>
+            )}
+            <div ref={bottomRef} className="m-0 p-0" />
+          </ScrollArea>
+          <Button onClick={handleScrollToTheTop} className="cursor-pointer absolute bottom-20 right-5 z-50 rounded-full shadow-lg">
+            <ArrowBigUp />
+          </Button>
+          <Button onClick={handleScrollToTheBottom} className="cursor-pointer absolute bottom-10 right-5 z-50 rounded-full shadow-lg">
+            <ArrowBigDown />
+          </Button>
+        </div>
       ) : (
         <Div className="text-center">
           <p>Looks like there is nothing here</p>
@@ -218,6 +250,6 @@ export default function CreatorVaults({ data: creatorData }: Props) {
         setOpen={setUploadVaultModal}
         vaultObjectIds={selectedUrls}
       />
-    </Div>
+    </PageWrapper>
   );
 }

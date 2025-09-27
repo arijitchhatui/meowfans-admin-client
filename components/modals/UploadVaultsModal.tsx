@@ -5,7 +5,7 @@ import { AssetType, GetUserQuery } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { useMutation } from '@apollo/client/react';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { LoadingButton } from '../LoadingButton';
 import { Button } from '../ui/button';
 import {
@@ -31,7 +31,7 @@ interface Props {
 export const UploadVaultsModal: React.FC<Props> = ({ isOpen, setOpen, vaultObjectIds, onCancel, onJobAdded, creatorData }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [destination, setDestination] = useState<AssetType>(AssetType.Private);
-  const [uploadVaults] = useMutation(DOWNLOAD_CREATOR_OBJECTS_AS_BATCH_MUTATION);
+  const [downloadCreatorObjectsAsBatch] = useMutation(DOWNLOAD_CREATOR_OBJECTS_AS_BATCH_MUTATION);
 
   const handleClose = () => {
     setOpen(false);
@@ -43,7 +43,7 @@ export const UploadVaultsModal: React.FC<Props> = ({ isOpen, setOpen, vaultObjec
     setLoading(true);
     try {
       if (!creatorData?.getUser.id) return;
-      await uploadVaults({
+      await downloadCreatorObjectsAsBatch({
         variables: {
           input: {
             creatorId: creatorData.getUser.id,

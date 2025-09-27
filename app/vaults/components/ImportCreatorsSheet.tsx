@@ -23,22 +23,20 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet';
 import { HostNames } from '@/lib/constants';
-import { INITIATE_CREATOR_OBJECTS_IMPORT_MUTATION } from '@/packages/gql/api/importAPI';
-import { GET_USER_QUERY } from '@/packages/gql/api/userAPI';
-import { DocumentQualityType, FileType, GetUserQuery, ImportTypes } from '@/packages/gql/generated/graphql';
-import { useLazyQuery, useMutation } from '@apollo/client/react';
+import { INITIATE_SINGLE_CREATOR_IMPORT_QUERY } from '@/packages/gql/api/importAPI';
+import { DocumentQualityType, FileType, ImportTypes } from '@/packages/gql/generated/graphql';
+import { useUserStore } from '@/zustand/user.store';
+import { useMutation } from '@apollo/client/react';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
-export const ImportSheet = () => {
+export const ImportCreatorsSheet = () => {
+  const { user } = useUserStore();
   const { username } = useParams();
   const [url, setUrl] = useState<string>('');
   const [start, setStart] = useState<number>(0);
-  const [getUser] = useLazyQuery(GET_USER_QUERY);
   const [exclude, setExclude] = useState<number>(0);
-  const [isOpen, setIsOpen] = useState<boolean>(true);
-  const [creator, setCreator] = useState<GetUserQuery>();
   const [loading, setLoading] = useState<boolean>(false);
   const [exceptions, setExceptions] = useState<string[]>([]);
   const [totalContent, setTotalContent] = useState<number>(0);
@@ -46,25 +44,17 @@ export const ImportSheet = () => {
   const [exceptionInput, setExceptionInput] = useState<string>('');
   const [fileType, setFileType] = useState<FileType>(FileType.Image);
   const [hasEditedSubDir, setHasEditedSubDir] = useState<boolean>(false);
+  const [initiateImport] = useMutation(INITIATE_SINGLE_CREATOR_IMPORT_QUERY);
   const [importType, setImportType] = useState<ImportTypes>(ImportTypes.Profile);
-  const [initiateImport] = useMutation(INITIATE_CREATOR_OBJECTS_IMPORT_MUTATION);
   const [qualityType, setQualityType] = useState<DocumentQualityType>(DocumentQualityType.HighDefinition);
-
-  const handleGetUser = async () => {
-    if (username) {
-      const { data } = await getUser({ variables: { username: username as string } });
-      setCreator(data);
-    } else setCreator(undefined);
-  };
 
   const handleInitiate = async () => {
     setLoading(true);
     try {
-      if (!creator?.getUser.id) return;
       await initiateImport({
         variables: {
           input: {
-            creatorId: creator?.getUser.id,
+            creatorId: user.getCreatorProfile.creatorId,
             url: url.trim(),
             fileType,
             qualityType,
@@ -93,7 +83,6 @@ export const ImportSheet = () => {
   };
 
   const handleClose = () => {
-    setIsOpen(false);
     setLoading(false);
     setUrl('');
     setFileType(FileType.Image);
@@ -108,12 +97,11 @@ export const ImportSheet = () => {
   };
 
   useEffect(() => {
-    if (creator || username) setSubDirectory(creator?.getUser.username || (username as string));
-    else if (!hasEditedSubDir && url) {
+    if (!hasEditedSubDir && url) {
       const parts = url.split('/').filter(Boolean);
       setSubDirectory(parts.at(-1) ?? '');
     }
-  }, [url, hasEditedSubDir, username, creator]);
+  }, [url, hasEditedSubDir, username]);
 
   useEffect(() => {
     const regex = /^https:\/\/[^\s/$.?#].[^\s]*$/i;
@@ -125,10 +113,6 @@ export const ImportSheet = () => {
     }
   }, [url]);
 
-  useEffect(() => {
-    handleGetUser();
-  }, [username]); //eslint-disable-line
-
   return (
     <Sheet onOpenChange={(open) => (open ? setSubDirectory((username as string) || '') : handleClose())}>
       <SheetTrigger asChild>
@@ -136,10 +120,8 @@ export const ImportSheet = () => {
       </SheetTrigger>
       <SheetContent className="p-1">
         <SheetHeader>
-          <SheetTitle>Add new contents {creator && creator?.getUser.username}</SheetTitle>
-          <SheetDescription>
-            {creator ? `You are importing to ${creator.getUser.username}` : 'Be descriptive about site information'}
-          </SheetDescription>
+          <SheetTitle>Add new contents {user && ' ✅🚀'}</SheetTitle>
+          <SheetDescription>Be descriptive about site information</SheetDescription>
         </SheetHeader>
         <div className="flex flex-col gap-3 space-y-1">
           <div className="grid gap-2">
@@ -161,7 +143,6 @@ export const ImportSheet = () => {
               type="text"
               placeholder="chris"
               required
-              disabled={!!creator}
               autoComplete="subDirectory"
               value={subDirectory}
               onChange={(e) => {
@@ -273,7 +254,7 @@ export const ImportSheet = () => {
                   <DropdownMenuLabel>Import types</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuRadioGroup value={importType} onValueChange={(val) => setImportType(val as ImportTypes)}>
-                    {!creator && <DropdownMenuRadioItem value={ImportTypes.Page}>Page</DropdownMenuRadioItem>}
+                    <DropdownMenuRadioItem value={ImportTypes.Page}>Page</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value={ImportTypes.Profile}>Profile</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value={ImportTypes.Branch}>Branch</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value={ImportTypes.Single}>Single</DropdownMenuRadioItem>

@@ -7,7 +7,7 @@ import { Div } from '@/wrappers/HTMLWrappers';
 import { useMutation } from '@apollo/client/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { LoadingButton } from '../LoadingButton';
 import { Button } from '../ui/button';
 import { Modal } from './Modal';
