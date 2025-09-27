@@ -23,16 +23,16 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet';
 import { Switch } from '@/components/ui/switch';
+import { CreatorContext } from '@/hooks/context/CreatorContextWrapper';
 import { HostNames } from '@/lib/constants';
-import { INITIATE_SINGLE_CREATOR_IMPORT_QUERY } from '@/packages/gql/api/importAPI';
+import { INITIATE_CREATORS_IMPORT_QUERY_MUTATION } from '@/packages/gql/api/importAPI';
 import { DocumentQualityType, FileType, ImportTypes } from '@/packages/gql/generated/graphql';
-import { useUserStore } from '@/zustand/user.store';
 import { useMutation } from '@apollo/client/react';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export const ImportCreatorsSheet = () => {
-  const { user } = useUserStore();
+  const [user] = useContext(CreatorContext);
   const [url, setUrl] = useState<string>('');
   const [start, setStart] = useState<number>(0);
   const [exclude, setExclude] = useState<number>(0);
@@ -40,12 +40,12 @@ export const ImportCreatorsSheet = () => {
   const [exceptions, setExceptions] = useState<string[]>([]);
   const [totalContent, setTotalContent] = useState<number>(0);
   const [subDirectory, setSubDirectory] = useState<string>('');
-  const [exceptionInput, setExceptionInput] = useState<string>('');
   const [isNewCreator, setIsNewCreator] = useState<boolean>(false);
+  const [exceptionInput, setExceptionInput] = useState<string>('');
   const [fileType, setFileType] = useState<FileType>(FileType.Image);
   const [hasEditedSubDir, setHasEditedSubDir] = useState<boolean>(false);
-  const [initiateImport] = useMutation(INITIATE_SINGLE_CREATOR_IMPORT_QUERY);
   const [importType, setImportType] = useState<ImportTypes>(ImportTypes.Page);
+  const [initiateImport] = useMutation(INITIATE_CREATORS_IMPORT_QUERY_MUTATION);
   const [qualityType, setQualityType] = useState<DocumentQualityType>(DocumentQualityType.HighDefinition);
 
   const handleInitiate = async () => {
@@ -69,7 +69,8 @@ export const ImportCreatorsSheet = () => {
         }
       });
       toast.success('Job added, come back after a while');
-    } catch {
+    } catch (error) {
+      console.log(error);
       toast.error('Something wrong happened!');
     } finally {
       handleClose();

@@ -6,8 +6,8 @@ export const INITIATE_CREATOR_OBJECTS_IMPORT_MUTATION = graphql(`
   }
 `);
 
-export const INITIATE_SINGLE_CREATOR_IMPORT_QUERY = graphql(`
-  query Initiate($input: CreateImportQueueInput!) {
+export const INITIATE_CREATORS_IMPORT_QUERY_MUTATION = graphql(`
+  mutation Initiate($input: CreateImportQueueInput!) {
     initiate(input: $input)
   }
 `);
