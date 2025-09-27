@@ -1,6 +1,7 @@
 'use client';
 
-import { ImportSheet } from '@/app/vaults/[username]/ImportSheet';
+import { ImportSingleCreatorSheet } from '@/app/vaults/[username]/ImportSingleCreatorSheet';
+import { ImportCreatorsSheet } from '@/app/vaults/components/ImportCreatorsSheet';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { useVaultsStore } from '@/zustand/vaults.store';
 import {
@@ -120,7 +121,7 @@ export const ApplyHeaderOptions = () => {
     case '/vaults':
       return (
         <Div className="flex flex-row items-center space-x-2">
-          <ImportSheet />
+          {pathname === '/vaults' ? <ImportCreatorsSheet /> : <ImportSingleCreatorSheet />}
           <TriggerModal
             applyTooltip={{ title: 'Stop importing' }}
             modalIcon={{ icon: PowerOff }}

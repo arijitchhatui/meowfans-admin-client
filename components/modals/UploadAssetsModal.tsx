@@ -7,7 +7,7 @@ import { Div } from '@/wrappers/HTMLWrappers';
 import { useAssetsStore } from '@/zustand/assets.store';
 import Image from 'next/image';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { DropZone } from '../DropZone';
 import { LoadingButton } from '../LoadingButton';
 import { Button } from '../ui/button';
