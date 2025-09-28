@@ -206,6 +206,7 @@ export const ImportSingleCreatorSheet = () => {
                     <DropdownMenuRadioGroup value={qualityType} onValueChange={(val) => setQualityType(val as DocumentQualityType)}>
                       <DropdownMenuRadioItem value={DocumentQualityType.HighDefinition}>High</DropdownMenuRadioItem>
                       <DropdownMenuRadioItem value={DocumentQualityType.LowDefinition}>Low</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value={DocumentQualityType.DivDefinition}>Div</DropdownMenuRadioItem>
                       <DropdownMenuRadioItem value={DocumentQualityType.DefaultDefinition}>Default</DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
                   </DropdownMenuContent>
