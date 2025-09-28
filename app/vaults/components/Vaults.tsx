@@ -15,7 +15,7 @@ import { VaultUrls } from './VaultUrls';
 export const Vaults = () => {
   const endRef = useRef<HTMLDivElement>(null);
   const [hasNext, setHasNext] = useState<boolean>(false);
-  const [processingCount, setProcessingCount] = useState<number | undefined>(undefined);
+  const [processingCount, setProcessingCount] = useState<number | undefined>(0);
   const [fulfilledCount, setFulfilledCount] = useState<number | undefined>(0);
   const [pendingCount, setPendingCount] = useState<number | undefined>(0);
   const [getCountOfObjects] = useLazyQuery(GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY);
@@ -112,7 +112,7 @@ export const Vaults = () => {
             className="text-xs font-medium bg-orange-500 text-white dark:bg-emerald-400"
             onClick={() => handleGetCountOfObjects(DownloadStates.Processing)}
           >
-            {processingCount === 0 ? processingCount : 'Processing'}
+            {processingCount ? processingCount : 'Processing'}
           </Button>
         </Div>
       </Div>
