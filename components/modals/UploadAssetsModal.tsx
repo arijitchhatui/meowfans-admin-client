@@ -115,6 +115,7 @@ export const UploadAssetsModal: React.FC<Props> = ({ onUpload }) => {
               return (
                 <Div key={idx} className="relative group cursor-pointer">
                   <Image
+                    unoptimized
                     src={url}
                     alt="preview"
                     className="w-full h-32 object-cover rounded-lg shadow-md group-hover:opacity-80 transition"

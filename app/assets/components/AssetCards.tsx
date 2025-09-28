@@ -12,6 +12,7 @@ export const AssetCards: React.FC<Props> = ({ creator }) => {
       <Link href={`/assets/${creator.username}`}>
         <div className="relative h-32 w-full overflow-hidden">
           <Image
+            unoptimized
             width={'100'}
             height={300}
             src={creator.bannerUrl || './assets/1.jpg'}
@@ -22,6 +23,7 @@ export const AssetCards: React.FC<Props> = ({ creator }) => {
 
         <div className="flex flex-col items-center -mt-10 z-10 relative">
           <Image
+            unoptimized
             src={creator.avatarUrl || './assets/1.jpg'}
             alt={creator.username}
             width={'100'}

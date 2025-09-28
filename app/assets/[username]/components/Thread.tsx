@@ -63,6 +63,7 @@ export const AssetsThread: React.FC<Props> = ({ assets, onLoadMore, onSlideShow,
                 }
               />
               <Image
+                unoptimized
                 src={creatorAsset.asset.rawUrl}
                 className={cn('cursor-pointer rounded-lg object-cover object-center h-70 w-70')}
                 alt="gallery-image"

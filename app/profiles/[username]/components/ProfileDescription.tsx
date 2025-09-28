@@ -2,7 +2,7 @@ import { SAvatar } from '@/components/Avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { GetCreatorProfileByAdminQuery, GetCreatorProfileQuery } from '@/packages/gql/generated/graphql';
+import { GetCreatorProfileByAdminQuery } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { BadgeCheckIcon, Heart } from 'lucide-react';
 import Image from 'next/image';
@@ -27,6 +27,7 @@ export const ProfileDescription: React.FC<Props> = ({ creatorInfo }) => {
         </CardHeader>
 
         <Image
+          unoptimized
           src={creatorInfo?.getCreatorProfileByAdmin.user.bannerUrl || './assets/1/jpg'}
           alt={creatorInfo?.getCreatorProfileByAdmin.user.username || ''}
           width={'100'}

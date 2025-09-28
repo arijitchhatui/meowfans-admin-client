@@ -1,8 +1,9 @@
 import { SAvatar } from '@/components/Avatar';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar';
-import { Div, Image, Typography } from '@/wrappers/HTMLWrappers';
+import { Div, Typography } from '@/wrappers/HTMLWrappers';
 import { Bookmark, Heart } from 'lucide-react';
+import Image from 'next/image';
 
 export const HomeFeed = () => {
   const { open } = useSidebar();
@@ -23,7 +24,7 @@ export const HomeFeed = () => {
                 </Button>
               </Div>
               <SAvatar className="absolute left-0 bottom-0 m-1 text-amber-100" />
-              <Image src={`./assets/${i + 1}.jpg`} alt={`feed-img-${i}`} className="w-full h-full object-cover" />
+              <Image unoptimized src={`./assets/${i + 1}.jpg`} alt={`feed-img-${i}`} className="w-full h-full object-cover" />
             </Div>
           ))}
       </Div>

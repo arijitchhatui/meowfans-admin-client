@@ -11,6 +11,15 @@ body {
   font-style: normal;
 }
 
+.image_abc123 {
+  cursor: pointer;
+  border-radius: 8px;
+  object-fit: cover;
+  object-position: center;
+  height: 280px;
+  width: 280px;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

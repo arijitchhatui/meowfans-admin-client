@@ -3,7 +3,7 @@
 import { Separator } from '@/components/ui/separator';
 import { GET_CREATORS_ASSETS_QUERY } from '@/packages/gql/api/adminAPI';
 import { UPDATE_CREATOR_PROFILE_BY_ADMIN_MUTATION } from '@/packages/gql/api/creatorAPI';
-import { AssetType, ExtendedUpdateCreatorProfileInput, GetUserQuery } from '@/packages/gql/generated/graphql';
+import { AssetType, ExtendedUpdateCreatorProfileInput, GetUserQuery, SortOrder } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { PageWrapper } from '@/wrappers/PageWrapper';
 import { useAssetsStore } from '@/zustand/assets.store';
@@ -32,7 +32,7 @@ export const CreatorAssets: React.FC<Props> = ({ data: creatorData }) => {
     refetch,
     fetchMore
   } = useQuery(GET_CREATORS_ASSETS_QUERY, {
-    variables: { input: { limit: 30, offset: 0, assetType: assetType, relatedUserId: creatorData?.getUser.id } }
+    variables: { input: { limit: 30, offset: 0, assetType: assetType, relatedUserId: creatorData?.getUser.id, orderBy: SortOrder.Asc } }
   });
 
   const handleRefetch = async () => {
