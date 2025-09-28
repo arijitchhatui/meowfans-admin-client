@@ -25,6 +25,7 @@ export const CreatorProfilesArea: React.FC<Props> = ({ creator }) => {
         </CardHeader>
 
         <Image
+          unoptimized
           src={creator?.bannerUrl || './assets/1/jpg'}
           alt={creator?.username || ''}
           width={'100'}

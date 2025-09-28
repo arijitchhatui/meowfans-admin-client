@@ -44,7 +44,14 @@ export const PlanPreview: React.FC<Props> = ({
                 Edit
               </Button>
             </Div>
-            <Image src={banner || '/asset/empty_image.jpg'} alt="banner" className="h-60 w-full object-cover" width={300} height={400} />
+            <Image
+              unoptimized
+              src={banner || '/asset/empty_image.jpg'}
+              alt="banner"
+              className="h-60 w-full object-cover"
+              width={300}
+              height={400}
+            />
           </Div>
         ) : (
           <Card className="border-dashed h-60">

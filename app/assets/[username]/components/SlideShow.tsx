@@ -21,6 +21,7 @@ export const SlideShow: React.FC<Props> = ({ slideUrls, onLoadMore }) => {
             {slideUrls &&
               slideUrls.map((url, index) => (
                 <Image
+                  unoptimized
                   src={url}
                   key={index}
                   alt="preview"

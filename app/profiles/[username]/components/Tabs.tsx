@@ -44,6 +44,7 @@ export const Preferences = () => {
           {data?.getCreatorAssets.length ? (
             data?.getCreatorAssets.map((creatorAsset) => (
               <Image
+                unoptimized
                 key={creatorAsset.id}
                 src={creatorAsset.asset.rawUrl}
                 alt="post"

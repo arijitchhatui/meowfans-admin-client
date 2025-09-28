@@ -807,7 +807,7 @@ export type PaginationInput = {
   assetType?: InputMaybe<AssetType>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderBy?: InputMaybe<SortOrder>;
   postTypes?: InputMaybe<Array<PostTypes>>;
   relatedEntityId?: InputMaybe<Scalars['ID']['input']>;
   relatedUserId?: InputMaybe<Scalars['ID']['input']>;
@@ -1133,6 +1133,11 @@ export type SocialAccountsEntity = {
   updatedAt: Scalars['DateTime']['output'];
   website?: Maybe<Scalars['String']['output']>;
 };
+
+export enum SortOrder {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
 
 export type SubscriptionPlansEntity = {
   __typename?: 'SubscriptionPlansEntity';
