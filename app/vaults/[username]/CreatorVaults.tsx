@@ -1,27 +1,17 @@
 'use client';
 
-import { LoadingButton } from '@/components/LoadingButton';
 import { UploadVaultsModal } from '@/components/modals/UploadVaultsModal';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { GET_CREATOR_VAULT_OBJECTS_QUERY } from '@/packages/gql/api/adminAPI';
-import { DownloadStates, GetUserQuery } from '@/packages/gql/generated/graphql';
+import { DownloadStates, GetCreatorVaultObjectsByAdminQuery, GetUserQuery, VaultObjectsEntity } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { PageWrapper } from '@/wrappers/PageWrapper';
 import { useQuery } from '@apollo/client/react';
-import { ArrowBigDown, ArrowBigUp, Download, Funnel, LucideLassoSelect, RefreshCcw } from 'lucide-react';
+import { ArrowBigDown, ArrowBigUp } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '../../../components/ui/dropdown-menu';
 import { CreatorVaultUrls } from './CreatorVaultUrls';
+import { CreatorVaultsHeader } from './CreatorVaultsHeader';
 
 interface Props {
   data?: GetUserQuery;
@@ -39,7 +29,12 @@ export default function CreatorVaults({ data: creatorData }: Props) {
 
   const { data, refetch, fetchMore, loading } = useQuery(GET_CREATOR_VAULT_OBJECTS_QUERY, {
     variables: {
-      input: { limit: 50, offset: 0, status: status, relatedUserId: creatorData?.getUser.id }
+      input: {
+        limit: 50,
+        offset: 0,
+        status: status,
+        relatedUserId: creatorData?.getUser.id
+      }
     }
   });
 
@@ -98,13 +93,19 @@ export default function CreatorVaults({ data: creatorData }: Props) {
 
   const handleScrollToTheBottom = () => {
     requestAnimationFrame(() => {
-      bottomRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
+      bottomRef.current?.scrollIntoView({
+        block: 'end',
+        behavior: 'smooth'
+      });
     });
   };
 
   const handleScrollToTheTop = () => {
     requestAnimationFrame(() => {
-      topRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      topRef.current?.scrollIntoView({
+        block: 'start',
+        behavior: 'smooth'
+      });
     });
   };
 
@@ -120,82 +121,24 @@ export default function CreatorVaults({ data: creatorData }: Props) {
     handleRefetch();
   }, [status]); //eslint-disable-line
 
-  useEffect(() => {
-    if (hasNext) handleScrollToTheBottom();
-  }, [data?.getCreatorVaultObjectsByAdmin.vaultObjects.length, hasNext]);
-
   return (
     <PageWrapper className="w-full">
-      <Div className="flex items-center justify-between space-x-1 sticky top-15 z-50">
-        <Div className="flex flex-row space-x-2 z-50">
-          <Button>{dataLength}</Button>
-          <div className="grid gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Funnel />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>Types</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuRadioGroup value={status} onValueChange={(val) => setStatus(val as DownloadStates)}>
-                  <DropdownMenuRadioItem value={DownloadStates.Fulfilled}>Fulfilled</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value={DownloadStates.Pending}>Pending</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value={DownloadStates.Processing}>Processing</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value={DownloadStates.Rejected}>Rejected</DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <Badge>{creatorData?.getUser.username}</Badge>
-        </Div>
-        <Div className="flex flex-row space-x-2">
-          {hasSelectedThirty ? (
-            <Button
-              variant="outline"
-              className="ml-auto transition-all duration-300 ease-in-out animate-slide-up"
-              onClick={() => handleSelectThirty(false, 0)}
-            >
-              Deselect all
-            </Button>
-          ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <LucideLassoSelect />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>Select</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuRadioGroup value={'30'} onValueChange={(val) => handleSelectThirty(true, Number(val))}>
-                  <DropdownMenuRadioItem value={'5'}>5</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value={'10'}>10</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value={'30'}>30</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value={String(data?.getCreatorVaultObjectsByAdmin.vaultObjects.length)}>All</DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-          <LoadingButton
-            variant="outline"
-            className="ml-auto animate-bounce"
-            onClick={() => setUploadVaultModal(true)}
-            disabled={!selectedUrls.length}
-            title={String(selectedUrls.length)}
-            Icon={Download}
-            loading={loading}
-          />
-          <Button variant="outline" className="ml-auto" onClick={handleRefetch}>
-            <RefreshCcw />
-          </Button>
-        </Div>
-      </Div>
+      <CreatorVaultsHeader
+        creatorData={creatorData as GetUserQuery}
+        data={data as GetCreatorVaultObjectsByAdminQuery}
+        dataLength={dataLength}
+        hasSelectedThirty={hasSelectedThirty}
+        isLoading={loading}
+        onRefetch={handleRefetch}
+        onSelectThirty={(selected, count) => handleSelectThirty(selected, count)}
+        onSetStatus={(stat) => setStatus(stat)}
+        onUploadVaultModal={() => setUploadVaultModal(true)}
+        selectedUrls={selectedUrls}
+      />
 
       {data?.getCreatorVaultObjectsByAdmin.vaultObjects.length ? (
         <div className="relative h-full">
-          <ScrollArea className="h-[calc(100vh-140px)] w-full p-1">
+          <ScrollArea className="h-[calc(100vh-160px)] w-full p-1">
             <div ref={topRef} className="p-0" />
             {data?.getCreatorVaultObjectsByAdmin.vaultObjects.map((vaultObject, idx) => (
               <Div key={idx} className="flex flex-col rounded-md border my-1 p-2">
@@ -204,38 +147,39 @@ export default function CreatorVaults({ data: creatorData }: Props) {
                   isLoading={loading}
                   onToggle={(id) => handleToggle(id)}
                   selectedUrls={selectedUrls}
-                  vaultObject={Object.assign(vaultObject)}
+                  vaultObject={vaultObject as VaultObjectsEntity}
                 />
               </Div>
             ))}
 
             {hasNext ? (
               <Div className="flex items-center justify-center space-x-2">
-                <Div className="space-x-2">
-                  <Button variant="outline" size="sm" onClick={handleFetchMore}>
-                    Next
-                  </Button>
-                </Div>
+                <Button variant="outline" size="sm" onClick={handleFetchMore}>
+                  Next
+                </Button>
               </Div>
             ) : (
               <Div className="text-center tracking-tight py-4">
-                <p>Looks like you have reached at the end!</p>
+                <p>Looks like you have reached the end!</p>
               </Div>
             )}
             <div ref={bottomRef} className="m-0 p-0" />
           </ScrollArea>
-          <Button onClick={handleScrollToTheTop} className="cursor-pointer absolute bottom-20 right-5 z-50 rounded-full shadow-lg">
-            <ArrowBigUp />
-          </Button>
-          <Button onClick={handleScrollToTheBottom} className="cursor-pointer absolute bottom-10 right-5 z-50 rounded-full shadow-lg">
-            <ArrowBigDown />
-          </Button>
+          <Div className="absolute right-3 bottom-20 flex flex-col gap-3 sm:bottom-10">
+            <Button size="icon" onClick={handleScrollToTheTop} className="rounded-full shadow-lg">
+              <ArrowBigUp />
+            </Button>
+            <Button size="icon" onClick={handleScrollToTheBottom} className="rounded-full shadow-lg">
+              <ArrowBigDown />
+            </Button>
+          </Div>
         </div>
       ) : (
         <Div className="text-center">
           <p>Looks like there is nothing here</p>
         </Div>
       )}
+
       <UploadVaultsModal
         creatorData={creatorData}
         onJobAdded={() => {

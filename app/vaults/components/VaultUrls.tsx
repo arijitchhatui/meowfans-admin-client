@@ -8,7 +8,7 @@ import { Div } from '@/wrappers/HTMLWrappers';
 import { useVaultsStore } from '@/zustand/vaults.store';
 import { ArrowUpRight, Download } from 'lucide-react';
 import moment from 'moment';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useState } from 'react';
 
 interface Props {
@@ -19,7 +19,6 @@ interface Props {
 export const VaultUrls: React.FC<Props> = ({ idx, creator }) => {
   const { setCreator } = useVaultsStore();
   const [downloadAllCreatorVaultsModal, setDownloadAllCreatorVaultsModal] = useState<boolean>(false);
-  const router = useRouter();
   return (
     <Div className="w-full flex flex-col gap-1.5">
       <Div className="flex flex-row justify-between w-full">
@@ -28,6 +27,7 @@ export const VaultUrls: React.FC<Props> = ({ idx, creator }) => {
           <SAvatar url={creator.avatarUrl} fallback="cr" />
         </div>
         <div className="flex flex-row gap-1">
+          <Badge className="text-xs font-medium bg-red-600 text-white">{creator.rejectedObjectCount}</Badge>
           <Badge className="text-xs font-medium bg-blue-500 text-white">{creator.fulfilledObjectCount}</Badge>
           <Badge className="text-xs font-medium animate-pulse">{creator.pendingObjectCount}</Badge>
           <Badge className="text-xs font-medium bg-orange-500 text-white dark:bg-emerald-400">{creator.processingObjectCount}</Badge>
@@ -38,14 +38,13 @@ export const VaultUrls: React.FC<Props> = ({ idx, creator }) => {
           <Badge className="text-xs font-medium">{creator.username}</Badge>
         </div>
         <div className="flex flex-row space-x-1.5">
-          <ApplyButtonTooltip
-            buttonProps={{ icon: ArrowUpRight, variant: 'outline' }}
-            onClick={() => {
-              setCreator(creator);
-              router.push(`/vaults/${creator.username}`);
-            }}
-            tootTipTitle="Visit"
-          />
+          <Link href={`/vaults/${creator.username}`}>
+            <ApplyButtonTooltip
+              buttonProps={{ icon: ArrowUpRight, variant: 'outline' }}
+              onClick={() => setCreator(creator)}
+              tootTipTitle="Visit"
+            />
+          </Link>
         </div>
       </Div>
       <Div className="flex flex-row justify-between w-full content-center items-center">

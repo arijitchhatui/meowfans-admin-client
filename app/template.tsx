@@ -14,7 +14,11 @@ export default function RootTemplate({ children }: Props) {
   const pathname = usePathname();
   const { channelId, username } = useParams();
 
-  if (![...authenticatedPaths, `/channels/${channelId}`, `/vaults/${username}`, `/assets/${username}`].includes(pathname))
+  if (
+    ![...authenticatedPaths, `/channels/${channelId}`, `/vaults/${username}`, `/assets/${username}`, `/profiles/${username}`].includes(
+      pathname
+    )
+  )
     return <Div>{children}</Div>;
 
   return (

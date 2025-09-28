@@ -7,7 +7,7 @@ import { GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY } from '@/packages/gql/api/
 import { DownloadStates, ExtendedUsersEntity } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { useLazyQuery, useQuery } from '@apollo/client/react';
-import { ArrowBigDown, RefreshCcw } from 'lucide-react';
+import { ArrowBigDown, Ban, CheckLine, ListTodo, Loader2Icon, LoaderIcon, RefreshCcw } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { VaultUrls } from './VaultUrls';
@@ -18,6 +18,7 @@ export const Vaults = () => {
   const [processingCount, setProcessingCount] = useState<number | undefined>(0);
   const [fulfilledCount, setFulfilledCount] = useState<number | undefined>(0);
   const [pendingCount, setPendingCount] = useState<number | undefined>(0);
+  const [rejectedObjectCount, setRejectedObjectCount] = useState<number | undefined>(0);
   const [getCountOfObjects] = useLazyQuery(GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY);
 
   const { data, refetch, fetchMore, loading } = useQuery(GET_ALL_CREATORS_QUERY, {
@@ -37,13 +38,28 @@ export const Vaults = () => {
       const { data } = await getCountOfObjects({ variables: { input: { status } } });
       switch (status) {
         case DownloadStates.Fulfilled:
-          setFulfilledCount(data?.getTotalObjectsAsType || 0);
+          toast.success(data?.getTotalObjectsAsType, {
+            description: 'Total downloaded objects'
+          });
           break;
+
         case DownloadStates.Processing:
-          setProcessingCount(data?.getTotalObjectsAsType || 0);
+          toast.success(data?.getTotalObjectsAsType, {
+            description: 'Total processing objects'
+          });
+
           break;
         case DownloadStates.Pending:
-          setPendingCount(data?.getTotalObjectsAsType || 0);
+          toast.success(data?.getTotalObjectsAsType, {
+            description: 'Total pending objects'
+          });
+
+          break;
+        case DownloadStates.Rejected:
+          toast.success(data?.getTotalObjectsAsType, {
+            description: 'Total rejected objects'
+          });
+
           break;
       }
     } catch {
@@ -103,16 +119,22 @@ export const Vaults = () => {
             <RefreshCcw />
           </Button>
           <Button className="text-xs font-medium bg-blue-500 text-white" onClick={() => handleGetCountOfObjects(DownloadStates.Fulfilled)}>
-            {fulfilledCount ? fulfilledCount : 'Fulfilled'}
+            <CheckLine />
           </Button>
           <Button className="text-xs font-medium animate-pulse" onClick={() => handleGetCountOfObjects(DownloadStates.Pending)}>
-            {pendingCount ? pendingCount : 'Pending'}
+            <ListTodo />
           </Button>
           <Button
             className="text-xs font-medium bg-orange-500 text-white dark:bg-emerald-400"
             onClick={() => handleGetCountOfObjects(DownloadStates.Processing)}
           >
-            {processingCount ? processingCount : 'Processing'}
+            <LoaderIcon className="" />
+          </Button>
+          <Button
+            className="text-xs font-medium bg-red-500 text-white dark:bg-red-600"
+            onClick={() => handleGetCountOfObjects(DownloadStates.Rejected)}
+          >
+            <Ban />
           </Button>
         </Div>
       </Div>

@@ -1,5 +1,37 @@
 import { graphql } from '../generated';
 
+export const GET_CREATOR_PROFILE_QUERY_BY_ADMIN = graphql(`
+  query GetCreatorProfileByAdmin($creatorId: String!) {
+    getCreatorProfileByAdmin(creatorId: $creatorId) {
+      allowsComment
+      allowsMessaging
+      bio
+      creatorId
+      displayOnlineStatus
+      displayTotalPost
+      displayTotalSubscriber
+      themeColor
+      totalExclusivePost
+      totalPost
+      totalPublicPost
+      totalSubscriber
+      user {
+        avatarUrl
+        bannerUrl
+        createdAt
+        deletedAt
+        firstName
+        id
+        lastLoginAt
+        lastName
+        roles
+        updatedAt
+        username
+      }
+    }
+  }
+`);
+
 export const GET_CREATOR_PROFILE_QUERY = graphql(`
   query GetCreatorProfile {
     getCreatorProfile {
@@ -32,9 +64,9 @@ export const GET_CREATOR_PROFILE_QUERY = graphql(`
   }
 `);
 
-export const UPDATE_CREATOR_PROFILE_MUTATION = graphql(`
-  mutation UpdateCreatorProfile($input: UpdateCreatorProfileInput!) {
-    updateCreatorProfile(input: $input) {
+export const UPDATE_CREATOR_PROFILE_BY_ADMIN_MUTATION = graphql(`
+  mutation UpdateCreatorProfileByAdmin($input: ExtendedUpdateCreatorProfileInput!) {
+    updateCreatorProfileByAdmin(input: $input) {
       allowsComment
       allowsMessaging
       bio
@@ -47,6 +79,11 @@ export const UPDATE_CREATOR_PROFILE_MUTATION = graphql(`
       totalPost
       totalPublicPost
       totalSubscriber
+      user {
+        avatarUrl
+        bannerUrl
+        username
+      }
     }
   }
 `);

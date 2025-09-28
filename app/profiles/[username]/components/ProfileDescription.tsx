@@ -2,13 +2,13 @@ import { SAvatar } from '@/components/Avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { GetCreatorProfileQuery } from '@/packages/gql/generated/graphql';
+import { GetCreatorProfileByAdminQuery, GetCreatorProfileQuery } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { BadgeCheckIcon, Heart } from 'lucide-react';
 import Image from 'next/image';
 
 interface Props {
-  creatorInfo?: GetCreatorProfileQuery;
+  creatorInfo?: GetCreatorProfileByAdminQuery;
 }
 
 export const ProfileDescription: React.FC<Props> = ({ creatorInfo }) => {
@@ -16,19 +16,19 @@ export const ProfileDescription: React.FC<Props> = ({ creatorInfo }) => {
     <Div className="w-full flex justify-end relative">
       <Card className="w-full max-w-sm mt-1 overflow-hidden">
         <CardHeader>
-          <CardTitle>{creatorInfo?.getCreatorProfile.user.username}</CardTitle>
-          <CardDescription>{creatorInfo?.getCreatorProfile.bio}</CardDescription>
+          <CardTitle>{creatorInfo?.getCreatorProfileByAdmin.user.username}</CardTitle>
+          <CardDescription>{creatorInfo?.getCreatorProfileByAdmin.bio}</CardDescription>
           <CardAction>
             <Badge variant="secondary" className="bg-blue-500 text-white dark:bg-blue-600 flex items-center gap-1">
               <BadgeCheckIcon className="w-4 h-4" />
-              {creatorInfo?.getCreatorProfile.user.roles}
+              {creatorInfo?.getCreatorProfileByAdmin.user.roles}
             </Badge>
           </CardAction>
         </CardHeader>
 
         <Image
-          src={creatorInfo?.getCreatorProfile.user.bannerUrl || './assets/1/jpg'}
-          alt={creatorInfo?.getCreatorProfile.user.username || ''}
+          src={creatorInfo?.getCreatorProfileByAdmin.user.bannerUrl || './assets/1/jpg'}
+          alt={creatorInfo?.getCreatorProfileByAdmin.user.username || ''}
           width={'100'}
           height={300}
           className="relative w-full md:h-40 h-20 bg-center bg-cover rounded-md"
@@ -37,17 +37,17 @@ export const ProfileDescription: React.FC<Props> = ({ creatorInfo }) => {
         <CardContent className="relative flex justify-between md:justify-center">
           <SAvatar
             fallback="profile"
-            url={creatorInfo?.getCreatorProfile.user.avatarUrl}
+            url={creatorInfo?.getCreatorProfileByAdmin.user.avatarUrl}
             className="md:w-40 md:h-40 w-20 h-20 rounded-full border-4shadow-md -mt-16"
           />
           <Div className="flex flex-row justify-end md:hidden gap-1">
             <Badge variant="secondary" className="bg-blue-500 text-white dark:bg-blue-600 flex items-center gap-1">
               <BadgeCheckIcon className="w-3 h-3" />
-              {creatorInfo?.getCreatorProfile.totalSubscriber}
+              {creatorInfo?.getCreatorProfileByAdmin.totalSubscriber}
             </Badge>
             <Badge variant="secondary" className="bg-blue-500 text-white dark:bg-blue-600 flex items-center gap-1">
               <Heart className="w-3 h-3" />
-              {creatorInfo?.getCreatorProfile.totalPost}
+              {creatorInfo?.getCreatorProfileByAdmin.totalPost}
             </Badge>
           </Div>
         </CardContent>

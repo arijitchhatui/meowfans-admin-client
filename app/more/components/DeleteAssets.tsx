@@ -1,14 +1,12 @@
 import { TriggerModal } from '@/components/modals/TriggerModal';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trash } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 interface Props {
   setDeleteAllAssetsModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const DeleteAllAssets: React.FC<Props> = ({ setDeleteAllAssetsModal }) => {
-  const router = useRouter();
   return (
     <Card className="flex">
       <CardHeader>

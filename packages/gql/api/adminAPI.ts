@@ -59,6 +59,7 @@ export const GET_ALL_CREATORS_QUERY = graphql(`
         fulfilledObjectCount
         pendingObjectCount
         processingObjectCount
+        rejectedObjectCount
       }
     }
   }
@@ -125,6 +126,7 @@ export const GET_CREATOR_VAULT_OBJECTS_QUERY = graphql(`
         id
         objectUrl
         status
+        fileType
         updatedAt
         vaultId
         vault {

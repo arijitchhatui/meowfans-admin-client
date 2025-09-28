@@ -1,13 +1,10 @@
 import { Div } from '@/wrappers/HTMLWrappers';
 import { motion } from 'framer-motion';
 import { Bell } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 export const Header = () => {
-  const router = useRouter();
   return (
     <Div className="flex flex-row items-center justify-between  bg-[var(--background)]">
-      {' '}
       <Div className="flex items-center gap-4">
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}

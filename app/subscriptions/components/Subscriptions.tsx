@@ -6,7 +6,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Div } from '@/wrappers/HTMLWrappers';
 import { PageWrapper } from '@/wrappers/PageWrapper';
 import { Check, Crown, Star } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Header } from './Header';
 
@@ -51,7 +50,6 @@ const PLANS: Plan[] = [
 ];
 
 export const Subscriptions = () => {
-  const router = useRouter();
   const [billing, setBilling] = useState<BillingCycle>('monthly');
   const [selectedPlan, setSelectedPlan] = useState<string | null>('pro');
 
@@ -91,7 +89,7 @@ export const Subscriptions = () => {
           </Div>
         </Div>
 
-        <Div className='w-full'>
+        <Div className="w-full">
           <Div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {PLANS.map((plan) => {
               const active = selectedPlan === plan.id;
