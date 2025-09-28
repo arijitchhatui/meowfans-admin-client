@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Div } from '@/wrappers/HTMLWrappers';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import DeleteAllAssets from './DeleteAssets';
 
 interface Props {
@@ -9,16 +8,15 @@ interface Props {
 }
 
 export const QuickActions: React.FC<Props> = ({ setDeleteAllAssetsModal }) => {
-  const router = useRouter();
   return (
     <Card>
       <CardHeader>
         <CardTitle>Quick Actions</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-3">
-        <Div>
-          <Button onClick={() => router.push('/vaults')}>Connect to a service</Button>
-        </Div>
+        <Link href={'/vaults'}>
+          <Button>Connect to a service</Button>
+        </Link>
         <Button variant="outline" className="w-full justify-start">
           Export settings
         </Button>

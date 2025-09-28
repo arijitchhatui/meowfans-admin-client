@@ -1,11 +1,17 @@
+'use client';
+
 import { SAvatar } from '@/components/Avatar';
 import { LoadingButton } from '@/components/LoadingButton';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { DownloadStates, VaultObjectsEntity } from '@/packages/gql/generated/graphql';
+import { DownloadStates, FileType, VaultObjectsEntity } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
-import { Download } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Copy, Download, ExternalLink, ImageDown, SquarePlay } from 'lucide-react';
 import moment from 'moment';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface Props {
   idx: number;
@@ -16,67 +22,109 @@ interface Props {
 }
 
 export const CreatorVaultUrls: React.FC<Props> = ({ idx, vaultObject, selectedUrls, onToggle, isLoading }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(vaultObject.objectUrl);
+      setCopied(true);
+      toast.success('Copied to clipboard');
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error('Failed to copy link');
+    }
+  };
+
+  const statusVariants = {
+    [DownloadStates.Pending]: {
+      text: 'Pending',
+      className: 'bg-gray-300 text-gray-800 dark:bg-gray-600 animate-pulse'
+    },
+    [DownloadStates.Fulfilled]: {
+      text: 'Fulfilled',
+      className: 'bg-blue-500 text-white dark:bg-blue-600'
+    },
+    [DownloadStates.Processing]: {
+      text: 'Processing',
+      className: 'bg-orange-500 text-white dark:bg-orange-600 animate-pulse'
+    },
+    [DownloadStates.Rejected]: {
+      text: 'Failed',
+      className: 'bg-red-500 text-white dark:bg-red-600'
+    }
+  };
+
+  const status = statusVariants[vaultObject.status];
+
   return (
-    <div className="h-full">
-      <Div className="flex flex-row justify-between">
-        <Div className="flex flex-row space-x-1.5">
-          <SAvatar url={vaultObject.vault.creatorProfile.user.avatarUrl} />
-          <Badge variant="secondary">{idx + 1}</Badge>
+    <>
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.2 }}
+        className="h-full rounded-xl border p-3 shadow-sm bg-white dark:bg-neutral-900 hover:shadow-md transition-all flex flex-col space-y-2"
+      >
+        <Div className="flex flex-row justify-between items-center gap-2">
+          <Div className="flex flex-row items-center gap-2">
+            <SAvatar url={vaultObject.vault.creatorProfile.user.avatarUrl} />
+            <Badge variant="secondary">{idx + 1}</Badge>
+          </Div>
+
+          <Div className="flex items-center gap-2">
+            <motion.div
+              key={vaultObject.status}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Badge className={status.className}>{status.text}</Badge>
+            </motion.div>
+
+            {vaultObject.status !== DownloadStates.Processing && vaultObject.status !== DownloadStates.Fulfilled && (
+              <Checkbox
+                className="h-5 w-5"
+                checked={selectedUrls.includes(vaultObject.id)}
+                onCheckedChange={() => onToggle(vaultObject.id)}
+                disabled={selectedUrls.length >= 30}
+              />
+            )}
+          </Div>
         </Div>
-        <Div className="items-center content-center  flex flex-row space-x-1">
-          {(() => {
-            switch (vaultObject.status) {
-              case DownloadStates.Pending:
-                return (
-                  <Badge variant="secondary" className="animate-pulse">
-                    Pending
-                  </Badge>
-                );
 
-              case DownloadStates.Fulfilled:
-                return (
-                  <Badge variant="secondary" className="bg-blue-500 text-white dark:bg-blue-600">
-                    Fulfilled
-                  </Badge>
-                );
+        <Div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-1">
+          <Div className="flex items-center gap-2 cursor-pointer">
+            <Div className="h-12 w-12 rounded-md border flex items-center justify-center bg-gray-100 dark:bg-neutral-800">
+              {vaultObject.fileType === FileType.Image ? (
+                <ImageDown size={18} className="text-gray-500" />
+              ) : (
+                <SquarePlay size={18} className="text-gray-500" />
+              )}
+            </Div>
+            <span className="truncate max-w-[200px] text-xs text-blue-600 hover:underline">{vaultObject.objectUrl}</span>
+          </Div>
 
-              case DownloadStates.Processing:
-                return (
-                  <Badge variant="secondary" className="bg-orange-500 text-white dark:bg-emerald-400">
-                    Processing
-                  </Badge>
-                );
+          <Div className="flex flex-row gap-2">
+            <Button size="icon" variant="outline" onClick={handleCopy} className="h-7 w-7" title="Copy URL">
+              {copied ? <span className="text-xs">✅</span> : <Copy size={14} />}
+            </Button>
+            <Button size="icon" variant="outline" asChild className="h-7 w-7" title="Open in new tab">
+              <a href={vaultObject.objectUrl} target="_blank" rel="noopener noreferrer">
+                <ExternalLink size={14} />
+              </a>
+            </Button>
+          </Div>
+        </Div>
 
-              case DownloadStates.Rejected:
-                return <Badge variant="destructive">Failed</Badge>;
-            }
-          })()}
-
-          {vaultObject.status !== DownloadStates.Processing && vaultObject.status !== DownloadStates.Fulfilled && (
-            <Checkbox
-              className="h-5 w-5"
-              checked={selectedUrls.includes(vaultObject.id)}
-              onCheckedChange={() => onToggle(vaultObject.id)}
-              disabled={selectedUrls.length >= 30}
-            />
+        <Div className="flex flex-row justify-between items-center text-xs px-1">
+          <p className="text-gray-500 dark:text-gray-400">{moment(vaultObject.createdAt).format('LT L')}</p>
+          {vaultObject.status === DownloadStates.Processing && (
+            <LoadingButton size="icon" variant={'outline'} className="cursor-pointer animate-bounce h-7 w-7" Icon={Download} loading />
           )}
         </Div>
-      </Div>
-      <Div className="max-w-sm p-2 text-xs">
-        {
-          <a className="break-all cursor-pointer hover:underline" href={vaultObject.objectUrl} target="_blank">
-            {vaultObject.objectUrl.slice(-46)}
-          </a>
-        }
-      </Div>
-      <Div className="flex flex-row justify-between">
-        <div className="flex flex-row space-x-1.5">
-          <p className="text-xs">{moment(vaultObject.createdAt).format('LT L')}</p>
-        </div>
-        {vaultObject.status === DownloadStates.Processing && (
-          <LoadingButton size="icon" variant={'outline'} className="cursor-pointer animate-bounce" Icon={Download} loading />
-        )}
-      </Div>
-    </div>
+      </motion.div>
+    </>
   );
 };

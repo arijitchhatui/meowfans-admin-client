@@ -17,9 +17,7 @@ export const authenticatedPaths = [
   '/assets',
   '/channels',
   '/analytics',
-  '/profile',
-  '/profile/creator',
-  '/profile/fan',
+  '/profiles',
   '/subscriptions',
   '/subscriptions/plan',
   '/cards',
@@ -115,7 +113,7 @@ export const appBottomNavButtonOptions = [
   { icon: ChartLine, title: 'Analytics', path: '/analytics' },
   { icon: GalleryVerticalEnd, title: 'Assets', path: '/assets' },
   { icon: CircleDollarSign, title: 'Subscriptions', path: '/subscriptions' },
-  { icon: CircleUserRound, title: 'My profile', path: '/profile' }
+  { icon: CircleUserRound, title: 'Profiles', path: '/profiles' }
 ];
 
 export const appSideBarButtonOptions = [
@@ -125,7 +123,7 @@ export const appSideBarButtonOptions = [
   { icon: GalleryVerticalEnd, title: 'Assets', path: '/assets' },
   { icon: CircleDollarSign, title: 'Subscriptions', path: '/subscriptions' },
   { icon: CreditCard, title: ' Add card', path: '/cards' },
-  { icon: CircleUserRound, title: 'My profile', path: `/profile` },
+  { icon: CircleUserRound, title: 'Profiles', path: `/profiles` },
   { icon: Settings, title: 'More', path: '/more' },
   { icon: ChartLine, title: 'Analytics', path: '/analytics' }
 ];

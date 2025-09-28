@@ -1,10 +1,10 @@
 'use client';
 
-import { GetCreatorProfileQuery } from '@/packages/gql/generated/graphql';
+import { GetCreatorProfileByAdminQuery, GetCreatorProfileQuery } from '@/packages/gql/generated/graphql';
 import { Div, Span } from '@/wrappers/HTMLWrappers';
 
 interface Props {
-  creatorInfo?: GetCreatorProfileQuery;
+  creatorInfo?: GetCreatorProfileByAdminQuery;
 }
 
 export const Stats: React.FC<Props> = ({ creatorInfo }) => {
@@ -15,19 +15,19 @@ export const Stats: React.FC<Props> = ({ creatorInfo }) => {
         <p className="text-sm text-muted-foreground">Likes</p>
       </Div>
       <Div>
-        <Span className="text-xl font-bold">{creatorInfo?.getCreatorProfile.totalSubscriber}</Span>
+        <Span className="text-xl font-bold">{creatorInfo?.getCreatorProfileByAdmin.totalSubscriber}</Span>
         <p className="text-sm text-muted-foreground">Followers</p>
       </Div>
       <Div>
-        <Span className="text-xl font-bold">{creatorInfo?.getCreatorProfile.totalPost}</Span>
+        <Span className="text-xl font-bold">{creatorInfo?.getCreatorProfileByAdmin.totalPost}</Span>
         <p className="text-sm text-muted-foreground">Posts</p>
       </Div>
       <Div>
-        <Span className="text-xl font-bold">{creatorInfo?.getCreatorProfile.totalPublicPost}</Span>
+        <Span className="text-xl font-bold">{creatorInfo?.getCreatorProfileByAdmin.totalPublicPost}</Span>
         <p className="text-sm text-muted-foreground">Subscribers</p>
       </Div>
       <Div>
-        <Span className="text-xl font-bold">{creatorInfo?.getCreatorProfile.totalExclusivePost}</Span>
+        <Span className="text-xl font-bold">{creatorInfo?.getCreatorProfileByAdmin.totalExclusivePost}</Span>
         <p className="text-sm text-muted-foreground">Exclusive</p>
       </Div>
     </Div>

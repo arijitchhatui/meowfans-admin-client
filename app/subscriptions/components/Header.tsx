@@ -1,11 +1,9 @@
-import { Button } from '@/components/ui/button';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { motion } from 'framer-motion';
 import { Bell } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export const Header = () => {
-  const router = useRouter();
   return (
     <Div className="flex flex-row items-center justify-between  bg-[var(--background)]">
       {' '}
@@ -25,7 +23,7 @@ export const Header = () => {
           </Div>
         </motion.div>
       </Div>
-      <Button onClick={() => router.push('/subscriptions/plan')}>Create new plan</Button>
+      <Link href={'/subscriptions/plan'}>Create new plan</Link>
     </Div>
   );
 };

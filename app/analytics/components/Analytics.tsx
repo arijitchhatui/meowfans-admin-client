@@ -1,9 +1,9 @@
 'use client';
 
-import { Performances } from '@/app/profile/components/ActiveAccounts';
-import { GrowthRate } from '@/app/profile/components/GrowthRate';
-import { NewCustomers } from '@/app/profile/components/NewCustomers';
-import { TotalRevenue } from '@/app/profile/components/TotalRevenue';
+import { Performances } from '@/app/profiles/[username]/components/ActiveAccounts';
+import { GrowthRate } from '@/app/profiles/[username]/components/GrowthRate';
+import { NewCustomers } from '@/app/profiles/[username]/components/NewCustomers';
+import { TotalRevenue } from '@/app/profiles/[username]/components/TotalRevenue';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Div } from '@/wrappers/HTMLWrappers';

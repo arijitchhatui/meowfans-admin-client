@@ -2,12 +2,14 @@
 
 import { Separator } from '@/components/ui/separator';
 import { GET_CREATORS_ASSETS_QUERY } from '@/packages/gql/api/adminAPI';
-import { AssetType, GetUserQuery } from '@/packages/gql/generated/graphql';
+import { UPDATE_CREATOR_PROFILE_BY_ADMIN_MUTATION } from '@/packages/gql/api/creatorAPI';
+import { AssetType, ExtendedUpdateCreatorProfileInput, GetUserQuery } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { PageWrapper } from '@/wrappers/PageWrapper';
 import { useAssetsStore } from '@/zustand/assets.store';
-import { useQuery } from '@apollo/client/react';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { AssetsHeader } from './Header';
 import { SlideShow } from './SlideShow';
 import { AssetsThread } from './Thread';
@@ -22,6 +24,8 @@ export const CreatorAssets: React.FC<Props> = ({ data: creatorData }) => {
   const [assetType, setAssetType] = useState<AssetType>(AssetType.Private);
   const [hasNext, setHasNext] = useState<boolean>(true);
   const { updated } = useAssetsStore();
+
+  const [updateCreatorProfile] = useMutation(UPDATE_CREATOR_PROFILE_BY_ADMIN_MUTATION);
 
   const {
     data: assets,
@@ -55,6 +59,18 @@ export const CreatorAssets: React.FC<Props> = ({ data: creatorData }) => {
     setSlideUrls(assets?.getCreatorAssetsByAdmin.map(({ asset }) => asset.rawUrl) ?? []);
   };
 
+  const handleUpdateCreatorProfile = async (input: ExtendedUpdateCreatorProfileInput) => {
+    try {
+      if (!creatorData?.getUser.id) return;
+      await updateCreatorProfile({
+        variables: { input }
+      });
+      toast.success('Updated creator profile');
+    } catch {
+      toast.error('Something wrong happened'!);
+    }
+  };
+
   useEffect(() => {
     handleFetchSlideUrls();
   }, []); //eslint-disable-line
@@ -85,6 +101,7 @@ export const CreatorAssets: React.FC<Props> = ({ data: creatorData }) => {
             handleFetchSlideUrls();
             setSlideShow((prev) => !prev);
           }}
+          onUpdateCreatorProfile={(input) => handleUpdateCreatorProfile(input)}
         />
       )}
     </PageWrapper>

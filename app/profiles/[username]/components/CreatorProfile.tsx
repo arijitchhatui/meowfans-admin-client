@@ -14,7 +14,8 @@ import {
   totalRevenueData,
   TotalRevenueType
 } from '@/lib/constants';
-import { GET_CREATOR_PROFILE_QUERY } from '@/packages/gql/api/creatorAPI';
+import { GET_CREATOR_PROFILE_QUERY_BY_ADMIN } from '@/packages/gql/api/creatorAPI';
+import { GetCreatorProfileByAdminQuery, GetUserQuery } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { PageWrapper } from '@/wrappers/PageWrapper';
 import { useQuery } from '@apollo/client/react';
@@ -37,8 +38,12 @@ const chartConfig: Record<ProfileCharts, ChartDataTypes> = {
 
 export type ChartDataTypes = NewCustomerType | TotalRevenueType | GrowthRateType | PerformanceType;
 
-const CreatorProfile = () => {
-  const { data: creatorInfo, loading } = useQuery(GET_CREATOR_PROFILE_QUERY);
+interface Props {
+  creator: GetUserQuery;
+}
+
+const CreatorProfile: React.FC<Props> = ({ creator }) => {
+  const { data: creatorInfo, loading } = useQuery(GET_CREATOR_PROFILE_QUERY_BY_ADMIN, { variables: { creatorId: creator?.getUser.id } });
   const [chart, setChart] = useState<ProfileCharts>(ProfileCharts.NEW_CUSTOMERS);
 
   if (loading) return <Loading />;
@@ -56,7 +61,7 @@ const CreatorProfile = () => {
             <AppliedChart data={chartConfig[chart]} />
             <ProfileDescription creatorInfo={creatorInfo} />
           </Div>
-          <Stats creatorInfo={creatorInfo} />
+          <Stats creatorInfo={creatorInfo as GetCreatorProfileByAdminQuery} />
           <Preferences />
           <Div className="flex gap-3 justify-center">
             <Button className="flex-1">Follow</Button>

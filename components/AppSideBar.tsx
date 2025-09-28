@@ -39,6 +39,9 @@ export const AppSidebar = () => {
         return '/vaults';
       case `/assets/${username}`:
         return '/assets';
+      case `/profiles/${username}`:
+      case `/profiles/${username}/details`:
+        return '/profiles';
       default:
         return pathname;
     }

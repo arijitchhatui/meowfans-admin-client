@@ -2,6 +2,7 @@ import { useIsMobile } from '@/hooks/useMobile';
 import { ArrowBigLeftDash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
+import Link from 'next/link';
 
 interface Props extends React.HtmlHTMLAttributes<HTMLDivElement> {
   className?: string;

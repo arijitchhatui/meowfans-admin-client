@@ -25,6 +25,7 @@ import {
   Trash,
   UserX
 } from 'lucide-react';
+import Link from 'next/link';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { ApplyButtonTooltip } from './ApplyTooltip';
 import { TriggerModal } from './modals/TriggerModal';
@@ -57,13 +58,15 @@ export const ApplyHeaderOptions = () => {
         </Div>
       );
 
-    case '/profile':
+    case '/profiles':
       return (
         <Div className="flex flex-row items-center space-x-2">
           <ApplyButtonTooltip tootTipTitle="Edit profile" buttonProps={{ icon: Edit }} />
           <ApplyButtonTooltip tootTipTitle="Images" buttonProps={{ icon: ImageIcon }} />
           <ApplyButtonTooltip tootTipTitle="Analytics" buttonProps={{ icon: BarChart3 }} />
-          <ApplyButtonTooltip tootTipTitle="Settings" buttonProps={{ icon: Settings }} onClick={() => router.push('/more')} />
+          <Link href={'/more'}>
+            <ApplyButtonTooltip tootTipTitle="Settings" buttonProps={{ icon: Settings }}/>
+          </Link>
         </Div>
       );
 
