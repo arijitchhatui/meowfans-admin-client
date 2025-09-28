@@ -221,6 +221,7 @@ export type DeleteSharePostInput = {
 
 export enum DocumentQualityType {
   DefaultDefinition = 'DEFAULT_DEFINITION',
+  DivDefinition = 'DIV_DEFINITION',
   HighDefinition = 'HIGH_DEFINITION',
   LowDefinition = 'LOW_DEFINITION'
 }
