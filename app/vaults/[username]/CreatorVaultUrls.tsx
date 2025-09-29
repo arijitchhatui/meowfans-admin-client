@@ -68,8 +68,8 @@ export const CreatorVaultUrls: React.FC<Props> = ({ idx, vaultObject, selectedUr
       >
         <Div className="flex flex-row justify-between items-center gap-2">
           <Div className="flex flex-row items-center gap-2">
-            <SAvatar url={vaultObject.vault.creatorProfile.user.avatarUrl} />
             <Badge variant="secondary">{idx + 1}</Badge>
+            <SAvatar url={vaultObject.vault.creatorProfile.user.avatarUrl} />
           </Div>
 
           <Div className="flex items-center gap-2">
