@@ -112,7 +112,7 @@ export default async function RootLayout({ children }: Props) {
       </head>
       <body className={cn(inter.variable, 'overscroll-none')}>
         <ApolloWrapper>
-          <Toaster invert />
+          <Toaster invert position='top-center' />
           <Theme>
             <ThemeProvider
               attribute="class"

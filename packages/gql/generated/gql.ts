@@ -57,6 +57,7 @@ type Documents = {
     "\n  mutation DownloadCreatorObjectsAsBatch($input: UploadVaultQueueInput!) {\n    downloadCreatorObjectsAsBatch(input: $input)\n  }\n": typeof types.DownloadCreatorObjectsAsBatchDocument,
     "\n  mutation Terminate {\n    terminate\n  }\n": typeof types.TerminateDocument,
     "\n  query GetTotalObjectsAsType($input: PaginationInput!) {\n    getTotalObjectsAsType(input: $input)\n  }\n": typeof types.GetTotalObjectsAsTypeDocument,
+    "\n  mutation CleanUpVaultObjectsOfACreator($input: CleanUpVaultInput!) {\n    cleanUpVaultObjectsOfACreator(input: $input)\n  }\n": typeof types.CleanUpVaultObjectsOfACreatorDocument,
 };
 const documents: Documents = {
     "\n  query GetAllAssetsByAdmin($input: PaginationInput!) {\n    getAllAssetsByAdmin(input: $input) {\n      count\n      assets {\n        assetId\n        createdAt\n        creatorId\n        deletedAt\n        id\n        type\n        asset {\n          blurredUrl\n          createdAt\n          fileType\n          id\n          mediaType\n          mimeType\n          rawUrl\n          updatedAt\n        }\n        creatorProfile {\n          createdAt\n          creatorId\n          verified\n          user {\n            avatarUrl\n            id\n            lastLoginAt\n            roles\n            username\n          }\n        }\n      }\n    }\n  }\n": types.GetAllAssetsByAdminDocument,
@@ -102,6 +103,7 @@ const documents: Documents = {
     "\n  mutation DownloadCreatorObjectsAsBatch($input: UploadVaultQueueInput!) {\n    downloadCreatorObjectsAsBatch(input: $input)\n  }\n": types.DownloadCreatorObjectsAsBatchDocument,
     "\n  mutation Terminate {\n    terminate\n  }\n": types.TerminateDocument,
     "\n  query GetTotalObjectsAsType($input: PaginationInput!) {\n    getTotalObjectsAsType(input: $input)\n  }\n": types.GetTotalObjectsAsTypeDocument,
+    "\n  mutation CleanUpVaultObjectsOfACreator($input: CleanUpVaultInput!) {\n    cleanUpVaultObjectsOfACreator(input: $input)\n  }\n": types.CleanUpVaultObjectsOfACreatorDocument,
 };
 
 /**
@@ -290,6 +292,10 @@ export function graphql(source: "\n  mutation Terminate {\n    terminate\n  }\n"
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query GetTotalObjectsAsType($input: PaginationInput!) {\n    getTotalObjectsAsType(input: $input)\n  }\n"): (typeof documents)["\n  query GetTotalObjectsAsType($input: PaginationInput!) {\n    getTotalObjectsAsType(input: $input)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CleanUpVaultObjectsOfACreator($input: CleanUpVaultInput!) {\n    cleanUpVaultObjectsOfACreator(input: $input)\n  }\n"): (typeof documents)["\n  mutation CleanUpVaultObjectsOfACreator($input: CleanUpVaultInput!) {\n    cleanUpVaultObjectsOfACreator(input: $input)\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

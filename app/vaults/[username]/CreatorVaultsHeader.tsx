@@ -26,6 +26,7 @@ interface Props {
   selectedUrls: string[];
   onUploadVaultModal: (open: boolean) => unknown;
   data: GetCreatorVaultObjectsByAdminQuery;
+  status: DownloadStates;
 }
 
 export const CreatorVaultsHeader: React.FC<Props> = ({
@@ -38,7 +39,8 @@ export const CreatorVaultsHeader: React.FC<Props> = ({
   onRefetch,
   onUploadVaultModal,
   selectedUrls,
-  data
+  data,
+  status
 }) => {
   return (
     <Div className="flex items-center justify-between content-center space-x-1 sticky top-15 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md p-2 rounded-md">
@@ -90,7 +92,9 @@ export const CreatorVaultsHeader: React.FC<Props> = ({
                   <DropdownMenuRadioItem value={'30'}>30</DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value={'100'}>100</DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value={'200'}>200</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value={'300'}>300</DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value={'500'}>500</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value={'1000'}>1000</DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value={String(data?.getCreatorVaultObjectsByAdmin.vaultObjects.length)}>All</DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>

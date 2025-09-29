@@ -17,3 +17,9 @@ export const GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY = graphql(`
     getTotalObjectsAsType(input: $input)
   }
 `);
+
+export const CLEAN_UP_VAULT_OBJECTS_OF_A_CREATOR_MUTATION = graphql(`
+  mutation CleanUpVaultObjectsOfACreator($input: CleanUpVaultInput!) {
+    cleanUpVaultObjectsOfACreator(input: $input)
+  }
+`);

@@ -18,7 +18,7 @@ interface Props {
 }
 
 export default function CreatorVaults({ data: creatorData }: Props) {
-  const LIMIT = 450;
+  const LIMIT = 500;
   const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const [hasNext, setHasNext] = useState<boolean>(false);
@@ -26,7 +26,6 @@ export default function CreatorVaults({ data: creatorData }: Props) {
   const [uploadVaultModal, setUploadVaultModal] = useState<boolean>(false);
   const [hasSelectedThirty, setHasSelectedThirty] = useState<boolean>(false);
   const [status, setStatus] = useState<DownloadStates>(DownloadStates.Pending);
-
   const { data, refetch, fetchMore, loading } = useQuery(GET_CREATOR_VAULT_OBJECTS_QUERY, {
     variables: {
       input: {
@@ -38,18 +37,19 @@ export default function CreatorVaults({ data: creatorData }: Props) {
     }
   });
 
-  const [dataLength, setDataLength] = useState<number>(data?.getCreatorVaultObjectsByAdmin.vaultObjects.length || 0);
+  const creatorVaultObjects = data?.getCreatorVaultObjectsByAdmin.vaultObjects ?? [];
+  const [dataLength, setDataLength] = useState<number>(creatorVaultObjects.length || 0);
 
   const handleRefetch = async () => {
     await refetch();
   };
 
-  const handleFetchMore = async () => {
+  const handleFetchMore = async (limit?: number) => {
     const { data: newData } = await fetchMore({
       variables: {
         input: {
-          offset: data?.getCreatorVaultObjectsByAdmin.vaultObjects.length,
-          limit: LIMIT,
+          offset: creatorVaultObjects.length,
+          limit: limit || LIMIT,
           status: status,
           relatedUserId: creatorData?.getUser.id
         }
@@ -68,8 +68,10 @@ export default function CreatorVaults({ data: creatorData }: Props) {
         };
       }
     });
-    setHasNext(!!newData?.getCreatorVaultObjectsByAdmin.vaultObjects.length);
+    const newCreatorVaultObjects = newData?.getCreatorVaultObjectsByAdmin.vaultObjects;
+    setHasNext(!!newCreatorVaultObjects?.length);
     setDataLength(data?.getCreatorVaultObjectsByAdmin.count || 0);
+    return newData;
   };
 
   const handleToggle = (id: string) => {
@@ -81,9 +83,19 @@ export default function CreatorVaults({ data: creatorData }: Props) {
 
   const handleSelectThirty = async (hasSelected: boolean, length: number) => {
     setHasSelectedThirty(hasSelected);
+    let vaultObjectData = creatorVaultObjects || [];
+
+    if (length > data!.getCreatorVaultObjectsByAdmin.vaultObjects.length) {
+      const newVaultObjectData = await handleFetchMore(length - data!.getCreatorVaultObjectsByAdmin.vaultObjects.length);
+      vaultObjectData = [
+        ...(creatorVaultObjects || []),
+        ...(newVaultObjectData?.getCreatorVaultObjectsByAdmin.vaultObjects || [])
+      ];
+    }
+
     setSelectedUrls(
       !hasSelectedThirty
-        ? data?.getCreatorVaultObjectsByAdmin.vaultObjects
+        ? vaultObjectData
             .filter((vault) => vault.status !== DownloadStates.Fulfilled && vault.status !== DownloadStates.Processing)
             .map((v) => v.id)
             .slice(0, length) ?? []
@@ -134,13 +146,14 @@ export default function CreatorVaults({ data: creatorData }: Props) {
         onSetStatus={(stat) => setStatus(stat)}
         onUploadVaultModal={() => setUploadVaultModal(true)}
         selectedUrls={selectedUrls}
+        status={status}
       />
 
-      {data?.getCreatorVaultObjectsByAdmin.vaultObjects.length ? (
+      {creatorVaultObjects.length ? (
         <div className="relative h-full">
           <ScrollArea className="h-[calc(100vh-160px)] w-full p-1">
             <div ref={topRef} className="p-0" />
-            {data?.getCreatorVaultObjectsByAdmin.vaultObjects.map((vaultObject, idx) => (
+            {creatorVaultObjects.map((vaultObject, idx) => (
               <Div key={idx} className="flex flex-col rounded-md border my-1 p-2">
                 <CreatorVaultUrls
                   idx={idx}
@@ -154,7 +167,7 @@ export default function CreatorVaults({ data: creatorData }: Props) {
 
             {hasNext ? (
               <Div className="flex items-center justify-center space-x-2">
-                <Button variant="outline" size="sm" onClick={handleFetchMore}>
+                <Button variant="outline" size="sm" onClick={() => handleFetchMore(LIMIT)}>
                   Next
                 </Button>
               </Div>
