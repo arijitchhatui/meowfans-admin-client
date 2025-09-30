@@ -3,13 +3,17 @@
 import { UploadVaultsModal } from '@/components/modals/UploadVaultsModal';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { EventTypes } from '@/lib/constants';
 import { GET_CREATOR_VAULT_OBJECTS_QUERY } from '@/packages/gql/api/adminAPI';
 import { DownloadStates, GetCreatorVaultObjectsByAdminQuery, GetUserQuery, VaultObjectsEntity } from '@/packages/gql/generated/graphql';
+import { configService } from '@/util/config';
+import { buildSafeUrl } from '@/util/helpers';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { PageWrapper } from '@/wrappers/PageWrapper';
 import { useQuery } from '@apollo/client/react';
 import { ArrowBigDown, ArrowBigUp } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { CreatorVaultUrls } from './CreatorVaultUrls';
 import { CreatorVaultsHeader } from './CreatorVaultsHeader';
 
@@ -26,7 +30,7 @@ export default function CreatorVaults({ data: creatorData }: Props) {
   const [uploadVaultModal, setUploadVaultModal] = useState<boolean>(false);
   const [hasSelectedThirty, setHasSelectedThirty] = useState<boolean>(false);
   const [status, setStatus] = useState<DownloadStates>(DownloadStates.Pending);
-  const { data, refetch, fetchMore, loading } = useQuery(GET_CREATOR_VAULT_OBJECTS_QUERY, {
+  const { data, refetch, fetchMore, loading, updateQuery } = useQuery(GET_CREATOR_VAULT_OBJECTS_QUERY, {
     variables: {
       input: {
         limit: 50,
@@ -87,10 +91,7 @@ export default function CreatorVaults({ data: creatorData }: Props) {
 
     if (length > data!.getCreatorVaultObjectsByAdmin.vaultObjects.length) {
       const newVaultObjectData = await handleFetchMore(length - data!.getCreatorVaultObjectsByAdmin.vaultObjects.length);
-      vaultObjectData = [
-        ...(creatorVaultObjects || []),
-        ...(newVaultObjectData?.getCreatorVaultObjectsByAdmin.vaultObjects || [])
-      ];
+      vaultObjectData = [...(creatorVaultObjects || []), ...(newVaultObjectData?.getCreatorVaultObjectsByAdmin.vaultObjects || [])];
     }
 
     setSelectedUrls(
@@ -105,21 +106,53 @@ export default function CreatorVaults({ data: creatorData }: Props) {
 
   const handleScrollToTheBottom = () => {
     requestAnimationFrame(() => {
-      bottomRef.current?.scrollIntoView({
-        block: 'end',
-        behavior: 'smooth'
-      });
+      bottomRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
     });
   };
 
   const handleScrollToTheTop = () => {
     requestAnimationFrame(() => {
-      topRef.current?.scrollIntoView({
-        block: 'start',
-        behavior: 'smooth'
-      });
+      topRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
     });
   };
+  useEffect(() => {
+    const es = new EventSource(buildSafeUrl({ host: configService.NEXT_PUBLIC_API_URL, pathname: '/sse/stream' }));
+    es.onopen = () => {
+      toast.success('SSE connection opened.');
+    };
+
+    es.addEventListener(EventTypes.VaultDownload, (event) => {
+      const { data } = JSON.parse(event.data);
+      updateQuery((prev) => {
+        return {
+          ...prev,
+          getCreatorVaultObjectsByAdmin: {
+            ...prev.getCreatorVaultObjectsByAdmin,
+            vaultObjects: prev.getCreatorVaultObjectsByAdmin?.vaultObjects?.map((vaultObject) =>
+              vaultObject?.id === data.id ? { ...vaultObject, ...data } : vaultObject
+            ),
+            count: (prev.getCreatorVaultObjectsByAdmin?.count || 0) + 1
+          }
+        } as GetCreatorVaultObjectsByAdminQuery;
+      });
+    });
+
+    es.addEventListener(EventTypes.ImportCompleted, (event) => {
+      const { data } = JSON.parse(event.data);
+      toast.success('Streaming is off!', {
+        description: data.finalMessage,
+        closeButton: true,
+        position: 'bottom-center'
+      });
+      es.close();
+    });
+
+    es.onerror = (error) => {
+      console.error('SSE Error:', error);
+      es.close();
+    };
+    return () => es.close();
+  }, []); //eslint-disable-line
 
   useEffect(() => {
     setDataLength(data?.getCreatorVaultObjectsByAdmin.count || 0);

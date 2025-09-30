@@ -8,7 +8,7 @@ import { ApolloClient, ApolloNextAppProvider, InMemoryCache } from '@apollo/clie
 function makeClient() {
   const httpLink = new HttpLink({
     uri: `${configService.NEXT_PUBLIC_API_GRAPHQL_URL}`,
-    fetchOptions: { cache: 'no-store' }
+    fetchOptions: { cache: 'no-cache' }
   });
 
   const authLink = new ApolloLink((operation, forward) => {

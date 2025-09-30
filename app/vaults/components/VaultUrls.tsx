@@ -82,9 +82,9 @@ export const VaultUrls: React.FC<Props> = ({ idx, creator, onJobAdded, onUpdateC
         <div className="flex flex-row space-x-1.5">
           <LoadingButton
             Icon={Download}
-            title={`Download all(${creator.vaultCount})`}
+            title={`Download all(${creator.pendingObjectCount})`}
             variant={'outline'}
-            disabled={!creator.vaultCount}
+            disabled={!creator.pendingObjectCount}
             onClick={() => setDownloadAllCreatorVaultsModal(true)}
           />
         </div>

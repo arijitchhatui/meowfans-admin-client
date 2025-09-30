@@ -184,8 +184,10 @@ export enum FileType {
 
 export enum HostNames {
   COOMER = 'coomer.st',
-  WALLHAVEN = 'wallhaven.cc'
+  WALLHAVEN = 'wallhaven.cc',
+  OK = 'ok.xxx'
 }
+export const OK_URI = 'https://ok.xxx/albums';
 
 export enum DocumentQualityType {
   HIGH_DEFINITION = 'highDefinition',
@@ -256,6 +258,13 @@ export interface PerformanceType {
     metric: string;
     value: number;
   }[];
+}
+
+export enum EventTypes {
+  VaultDownload = 'vault_download',
+  ImportObject = 'import_object',
+  VaultDownloadCompleted = 'vault_download_completed',
+  ImportCompleted = 'import_completed'
 }
 
 export const newCustomersData: NewCustomerType = {

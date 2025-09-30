@@ -1,11 +1,16 @@
+'use client';
+
 import { TerminateDownloadingModal } from '@/components/modals/TerminateDownloadingModal';
 import { TerminateImportingJobsModal } from '@/components/modals/TerminateImportingJobsModal';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useExtendedUsersContextVaults } from '@/hooks/context/ExtendedUsersContext';
+import { EventTypes } from '@/lib/constants';
 import { GET_ALL_CREATORS_QUERY } from '@/packages/gql/api/adminAPI';
 import { GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY } from '@/packages/gql/api/vaultsAPI';
 import { DownloadStates, ExtendedUsersEntity } from '@/packages/gql/generated/graphql';
+import { configService } from '@/util/config';
+import { buildSafeUrl } from '@/util/helpers';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { useLazyQuery, useQuery } from '@apollo/client/react';
 import { ArrowBigDown, Ban, CheckLine, ListTodo, LoaderIcon, RefreshCcw } from 'lucide-react';
@@ -45,10 +50,11 @@ const statusButtons = [
 export const Vaults = () => {
   const endRef = useRef<HTMLDivElement>(null);
   const [hasNext, setHasNext] = useState<boolean>(false);
-  const [getCountOfObjects] = useLazyQuery(GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY, { fetchPolicy: 'network-only' });
+  const [getCountOfObjects] = useLazyQuery(GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY);
   const { data, refetch, fetchMore, loading } = useQuery(GET_ALL_CREATORS_QUERY, { variables: { input: { limit: 100, offset: 0 } } });
   const [dataLength, setDataLength] = useState<number>(data?.getCreatorsByAdmin.creators.length || 0);
   const { creatorVaults, setCreatorVaults } = useExtendedUsersContextVaults();
+  const hasProcessing = creatorVaults.some((creatorVault) => creatorVault.processingObjectCount > 0);
 
   const handleRefetch = async () => {
     const { data } = await refetch();
@@ -97,10 +103,65 @@ export const Vaults = () => {
   };
 
   useEffect(() => {
-    if (data?.getCreatorsByAdmin.creators.length) {
-      setCreatorVaults(data.getCreatorsByAdmin.creators as ExtendedUsersEntity[]);
-    }
-  }, [data]); //eslint-disable-line
+    if (!hasProcessing) return;
+
+    const es = new EventSource(buildSafeUrl({ host: configService.NEXT_PUBLIC_API_URL, pathname: '/sse/stream' }));
+    es.onopen = () => {
+      toast.success('SSE connection opened.');
+    };
+
+    es.addEventListener(EventTypes.VaultDownload, (event) => {
+      const { creatorId, data } = JSON.parse(event.data);
+      setCreatorVaults((prev) =>
+        prev.map((creator) =>
+          creator.id === creatorId
+            ? {
+                ...creator,
+                fulfilledObjectCount: data.status === 'FULFILLED' ? creator.fulfilledObjectCount + 1 : creator.fulfilledObjectCount,
+                rejectedObjectCount: data.status === 'REJECTED' ? creator.rejectedObjectCount + 1 : creator.rejectedObjectCount,
+                pendingObjectCount: data.status === 'PENDING' ? creator.pendingObjectCount + 1 : creator.pendingObjectCount,
+                processingObjectCount: creator.processingObjectCount - 1
+              }
+            : creator
+        )
+      );
+    });
+
+    es.addEventListener(EventTypes.ImportObject, (event) => {
+
+    })
+
+    es.addEventListener(EventTypes.ImportCompleted, (event) => {
+      const { data } = JSON.parse(event.data);
+      toast.success('Streaming is off!', {
+        description: data.finalMessage,
+        closeButton: true,
+        position: 'bottom-center'
+      });
+    });
+
+    es.addEventListener(EventTypes.VaultDownloadCompleted, (event) => {
+      const { data } = JSON.parse(event.data);
+      toast.success('Streaming is off!', {
+        description: data.finalMessage,
+        closeButton: true,
+        position: 'bottom-center'
+      });
+      es.close();
+    });
+
+    es.onerror = (error) => {
+      console.error('SSE Error:', error);
+      es.close();
+    };
+    return () => es.close();
+  }, [hasProcessing]); //eslint-disable-line
+
+  // useEffect(() => {
+  //   if (data?.getCreatorsByAdmin.creators.length) {
+  //     setCreatorVaults(data.getCreatorsByAdmin.creators as ExtendedUsersEntity[]);
+  //   }
+  // }, [data]); //eslint-disable-line
 
   useEffect(() => {
     setDataLength(data?.getCreatorsByAdmin.count || 0);

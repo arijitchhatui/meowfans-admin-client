@@ -2,6 +2,8 @@ import { ExtendedUsersEntity } from '@/packages/gql/generated/graphql';
 import { create } from 'zustand';
 
 type VaultsStore = {
+  eventSource: EventSource | null;
+  setEventSource: (eventSource: EventSource) => void;
   terminateDownloadModal: boolean;
   setTerminateDownloadModal: (terminateDownloadModal: boolean) => void;
   creator: ExtendedUsersEntity;
@@ -13,6 +15,8 @@ type VaultsStore = {
 };
 
 export const useVaultsStore = create<VaultsStore>()((set) => ({
+  eventSource: null,
+  setEventSource: (eventSource: EventSource) => set(() => ({ eventSource })),
   terminateDownloadModal: false,
   setTerminateDownloadModal: (terminateDownloadModal: boolean) => set(() => ({ terminateDownloadModal })),
   creator: {} as ExtendedUsersEntity,
