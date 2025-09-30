@@ -109,9 +109,15 @@ export const ImportCreatorsSheet = () => {
   useEffect(() => {
     const regex = /^https:\/\/[^\s/$.?#].[^\s]*$/i;
     if (url.length && regex.test(url)) {
-      if (new URL(url).hostname === HostNames.WALLHAVEN) {
-        setQualityType(DocumentQualityType.LowDefinition);
-        setImportType(ImportTypes.Branch);
+      switch (new URL(url).hostname) {
+        case HostNames.WALLHAVEN:
+          setQualityType(DocumentQualityType.LowDefinition);
+          setImportType(ImportTypes.Branch);
+          break;
+        case HostNames.OK:
+          setQualityType(DocumentQualityType.DivDefinition);
+          setImportType(ImportTypes.Ok);
+          break;
       }
     }
   }, [url]);
@@ -181,7 +187,7 @@ export const ImportCreatorsSheet = () => {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="exclude">Exclude</Label>
+              <Label htmlFor="exclude">Exclude / Span</Label>
               <Input
                 id="exclude"
                 type="text"
@@ -283,6 +289,7 @@ export const ImportCreatorsSheet = () => {
                     <DropdownMenuRadioItem value={ImportTypes.Profile}>Profile</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value={ImportTypes.Branch}>Branch</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value={ImportTypes.Single}>Single</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value={ImportTypes.Ok}>OK</DropdownMenuRadioItem>
                   </DropdownMenuRadioGroup>
                 </DropdownMenuContent>
               </DropdownMenu>

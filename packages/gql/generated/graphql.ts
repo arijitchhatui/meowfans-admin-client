@@ -50,6 +50,11 @@ export type CleanUpVaultInput = {
   creatorId: Scalars['String']['input'];
 };
 
+export enum ContentType {
+  Nsfw = 'NSFW',
+  Sfw = 'SFW'
+}
+
 export type CreateChannelInput = {
   creatorId: Scalars['String']['input'];
   fanId: Scalars['String']['input'];
@@ -472,6 +477,7 @@ export type GroupsEntity = {
 
 export enum ImportTypes {
   Branch = 'BRANCH',
+  Ok = 'OK',
   Page = 'PAGE',
   Profile = 'PROFILE',
   Single = 'SINGLE'
@@ -1274,6 +1280,7 @@ export type UsersEntity = {
 
 export type VaultObjectsEntity = {
   __typename?: 'VaultObjectsEntity';
+  contentType: ContentType;
   createdAt: Scalars['DateTime']['output'];
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   fileType: FileType;

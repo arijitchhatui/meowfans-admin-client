@@ -1,6 +1,6 @@
 'use client';
 
-import { DOWNLOAD_ALL_CREATOR_OBJECTS_MUTATION } from '@/packages/gql/api/adminAPI';
+import { DOWNLOAD_ALL_CREATOR_OBJECTS_MUTATION, GET_ALL_CREATORS_QUERY } from '@/packages/gql/api/adminAPI';
 import { AssetType, ExtendedUsersEntity } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { useMutation } from '@apollo/client/react';
@@ -30,7 +30,11 @@ interface Props {
 export const DownloadCreatorsAllVaultsModal: React.FC<Props> = ({ isOpen, setOpen, creator, onCancel, onJobAdded }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [destination, setDestination] = useState<AssetType>(AssetType.Private);
-  const [uploadVaults] = useMutation(DOWNLOAD_ALL_CREATOR_OBJECTS_MUTATION);
+  const [uploadVaults] = useMutation(DOWNLOAD_ALL_CREATOR_OBJECTS_MUTATION, {
+    refetchQueries: () => {
+      return [{ query: GET_ALL_CREATORS_QUERY, variables: { input: { limit: 30 } } }];
+    }
+  });
 
   const handleClose = () => {
     setOpen(false);
