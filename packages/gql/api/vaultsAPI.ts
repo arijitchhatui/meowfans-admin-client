@@ -23,3 +23,14 @@ export const CLEAN_UP_VAULT_OBJECTS_OF_A_CREATOR_MUTATION = graphql(`
     cleanUpVaultObjectsOfACreator(input: $input)
   }
 `);
+
+export const GET_ALL_OBJECTS_COUNT_OF_EACH_TYPE = graphql(`
+  query GetCountOfObjectsOfEachType {
+    getCountOfObjectsOfEachType {
+      fulfilled
+      pending
+      processing
+      rejected
+    }
+  }
+`);

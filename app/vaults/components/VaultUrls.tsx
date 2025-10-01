@@ -23,7 +23,6 @@ interface Props {
 export const VaultUrls: React.FC<Props> = ({ idx, creator, onJobAdded, onUpdateCreator }) => {
   const [downloadAllCreatorVaultsModal, setDownloadAllCreatorVaultsModal] = useState<boolean>(false);
   const [cleanUpVaultObjects] = useMutation(CLEAN_UP_VAULT_OBJECTS_OF_A_CREATOR_MUTATION);
-
   const handleCleanUpVaultObjects = async (creatorId: string) => {
     try {
       const { data } = await cleanUpVaultObjects({ variables: { input: { creatorId } } });
@@ -92,6 +91,7 @@ export const VaultUrls: React.FC<Props> = ({ idx, creator, onJobAdded, onUpdateC
           <p className="text-xs">{moment(creator.createdAt).format('LT L')}</p>
         </div>
       </Div>
+
       <DownloadCreatorsAllVaultsModal
         creator={creator}
         onCancel={() => setDownloadAllCreatorVaultsModal(false)}

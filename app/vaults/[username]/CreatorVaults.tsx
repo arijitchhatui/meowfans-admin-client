@@ -117,9 +117,6 @@ export default function CreatorVaults({ data: creatorData }: Props) {
   };
   useEffect(() => {
     const es = new EventSource(buildSafeUrl({ host: configService.NEXT_PUBLIC_API_URL, pathname: '/sse/stream' }));
-    es.onopen = () => {
-      toast.success('SSE connection opened.');
-    };
 
     es.addEventListener(EventTypes.VaultDownload, (event) => {
       const { data } = JSON.parse(event.data);
@@ -144,14 +141,7 @@ export default function CreatorVaults({ data: creatorData }: Props) {
         closeButton: true,
         position: 'bottom-center'
       });
-      es.close();
     });
-
-    es.onerror = (error) => {
-      console.error('SSE Error:', error);
-      es.close();
-    };
-    return () => es.close();
   }, []); //eslint-disable-line
 
   useEffect(() => {

@@ -42,6 +42,9 @@ export const GET_ALL_CREATORS_QUERY = graphql(`
   query GetCreatorsByAdmin($input: PaginationInput!) {
     getCreatorsByAdmin(input: $input) {
       count
+      totalPages
+      hasNext
+      hasPrev
       creators {
         avatarUrl
         bannerUrl

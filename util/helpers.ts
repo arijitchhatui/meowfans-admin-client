@@ -1,6 +1,7 @@
 import { authCookieKey, authRefreshCookieKey, TokenType, UserRoles } from '@/lib/constants';
 import { getCookie } from 'cookies-next';
 import { jwtDecode } from 'jwt-decode';
+import { RefObject } from 'react';
 import { configService } from './config';
 
 export const isValidEmail = (email: string) => {
@@ -50,6 +51,25 @@ export const decodeJwtToken = (token?: string): JwtUser | null => {
   } catch {
     return null;
   }
+};
+
+export const handleScrollToTheEnd = (ref: RefObject<HTMLDivElement | null>) => {
+  requestAnimationFrame(() => {
+    ref.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
+  });
+};
+
+export const handleScrollToTheTop = (ref: RefObject<HTMLDivElement | null>) => {
+  requestAnimationFrame(() => {
+    ref.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  });
+};
+
+const handleFormatNumberToKAndM = (digit: number) => {
+  return new Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    compactDisplay: 'short'
+  }).format(digit);
 };
 
 export const useCanonicalPathName = (pathname: string) => {
