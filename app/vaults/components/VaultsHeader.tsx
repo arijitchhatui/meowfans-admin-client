@@ -1,0 +1,177 @@
+'use client';
+
+import { LoadingButton } from '@/components/LoadingButton';
+import { DownloadVaultsAsBatchModal } from '@/components/modals/DownloadVaultsAsBatchModal';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useIsMobile } from '@/hooks/useMobile';
+import { EventTypes } from '@/lib/constants';
+import { GET_ALL_OBJECTS_COUNT_OF_EACH_TYPE, GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY } from '@/packages/gql/api/vaultsAPI';
+import { DownloadStates, ExtendedUsersEntity, GetCountOfObjectsOfEachTypeQuery } from '@/packages/gql/generated/graphql';
+import { configService } from '@/util/config';
+import { buildSafeUrl } from '@/util/helpers';
+import { useLazyQuery, useQuery } from '@apollo/client/react';
+import { Ban, CheckLine, Download, ListTodo, LoaderIcon, RefreshCcw } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+
+const statusLabels: Record<DownloadStates, string> = {
+  [DownloadStates.Fulfilled]: 'Total downloaded objects',
+  [DownloadStates.Pending]: 'Total pending objects',
+  [DownloadStates.Processing]: 'Total processing objects',
+  [DownloadStates.Rejected]: 'Total rejected objects'
+};
+
+const statusButtons = [
+  {
+    className: 'text-xs font-medium bg-blue-500 text-white',
+    label: 'fulfilled',
+    status: DownloadStates.Fulfilled,
+    icon: <CheckLine />
+  },
+  {
+    className: 'text-xs font-medium animate-pulse',
+    label: 'pending',
+    status: DownloadStates.Pending,
+    icon: <ListTodo />
+  },
+  {
+    className: 'text-xs font-medium bg-orange-500 text-white dark:bg-emerald-400',
+    label: 'processing',
+    status: DownloadStates.Processing,
+    icon: <LoaderIcon />
+  },
+  {
+    className: 'text-xs font-medium bg-red-500 text-white dark:bg-red-600',
+    label: 'rejected',
+    status: DownloadStates.Rejected,
+    icon: <Ban />
+  }
+];
+
+interface Props {
+  filteredVaults: ExtendedUsersEntity[];
+  count: number;
+  selectedCreatorIds: string[];
+  setSelectedCreatorIds: React.Dispatch<React.SetStateAction<string[]>>;
+  onRefetch: () => unknown;
+  onSelectN: (n: number) => void;
+  onFilter: (text: string) => void;
+}
+
+export const VaultsHeader: React.FC<Props> = ({
+  count,
+  onRefetch,
+  onSelectN,
+  selectedCreatorIds,
+  setSelectedCreatorIds,
+  onFilter,
+  filteredVaults
+}) => {
+  const [numToSelect, setNumToSelect] = useState<number>(30);
+  const [filterText, setFilterText] = useState('');
+  const [getCountOfObjects] = useLazyQuery(GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY);
+  const [downloadVaultsAsBatchModal, setDownloadAVaultsAsBatchModal] = useState<boolean>(false);
+  const { data: getAllObjectsCount, updateQuery: updateAllObjectsCount } = useQuery(GET_ALL_OBJECTS_COUNT_OF_EACH_TYPE);
+  const isMobile = useIsMobile();
+
+  const handleGetCountOfObjects = async (status: DownloadStates) => {
+    try {
+      toast.loading('Fetching latest count...');
+      const { data } = await getCountOfObjects({ variables: { input: { status } } });
+      toast.dismiss();
+      toast.success(data?.getTotalObjectsAsType, {
+        description: statusLabels[status]
+      });
+      return data?.getTotalObjectsAsType;
+    } catch {
+      toast.dismiss();
+      toast.error('Something wrong happened!');
+    }
+  };
+
+  useEffect(() => {
+    onFilter(filterText);
+  }, [filterText]); // eslint-disable-line
+
+  useEffect(() => {
+    const es = new EventSource(buildSafeUrl({ host: configService.NEXT_PUBLIC_API_URL, pathname: '/sse/stream' }));
+
+    es.addEventListener(EventTypes.VaultDownload, (event) => {
+      const { data } = JSON.parse(event.data);
+      updateAllObjectsCount((prev) => {
+        return {
+          ...prev,
+          getCountOfObjectsOfEachType: {
+            ...prev.getCountOfObjectsOfEachType,
+            fulfilled:
+              data.status === 'FULFILLED'
+                ? (prev.getCountOfObjectsOfEachType?.fulfilled || 0) + 1
+                : prev.getCountOfObjectsOfEachType?.fulfilled,
+            rejected:
+              data.status === 'REJECTED'
+                ? (prev.getCountOfObjectsOfEachType?.rejected || 0) + 1
+                : prev.getCountOfObjectsOfEachType?.rejected,
+            pending:
+              data.status === 'PENDING' ? (prev.getCountOfObjectsOfEachType?.pending || 0) + 1 : prev.getCountOfObjectsOfEachType?.pending,
+            processing: Math.max((prev.getCountOfObjectsOfEachType?.processing || 0) - 1, 0)
+          }
+        } as GetCountOfObjectsOfEachTypeQuery;
+      });
+    });
+  }, []); //eslint-disable-line
+
+  return (
+    <div className="flex flex-col space-y-2 sticky top-15 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md p-2 rounded-md">
+      <div className="flex items-center justify-between space-x-2">
+        <Button>{count}</Button>
+
+        <div className="flex space-x-2 items-center">
+          <Input type="number" min={1} value={numToSelect} onChange={(e) => setNumToSelect(Number(e.target.value))} className="w-20" />
+          <Button onClick={() => onSelectN(numToSelect)}>Select {numToSelect}</Button>
+        </div>
+
+        <Input placeholder="Filter by ID or name..." value={filterText} onChange={(e) => setFilterText(e.target.value)} className="w-48" />
+
+        <Button variant="outline" className="ml-auto" onClick={onRefetch}>
+          <RefreshCcw />
+        </Button>
+      </div>
+
+      <div className="flex flex-row space-x-2">
+        {statusButtons.map(({ className, icon, status, label }, idx) => (
+          <Button key={idx} className={className} onClick={() => handleGetCountOfObjects(status)}>
+            {isMobile
+              ? icon
+              : getAllObjectsCount?.getCountOfObjectsOfEachType[label as keyof typeof getAllObjectsCount.getCountOfObjectsOfEachType]}
+          </Button>
+        ))}
+        <LoadingButton
+          variant="outline"
+          size="sm"
+          onClick={() => setDownloadAVaultsAsBatchModal(true)}
+          disabled={!selectedCreatorIds.length}
+          title={String(selectedCreatorIds.length)}
+          Icon={Download}
+        />
+        <LoadingButton
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setDownloadAVaultsAsBatchModal(false);
+            setSelectedCreatorIds([]);
+          }}
+          disabled={!selectedCreatorIds.length}
+          title={'Cancel'}
+        />
+      </div>
+      <DownloadVaultsAsBatchModal
+        creators={filteredVaults.filter((cr) => selectedCreatorIds.includes(cr.id))}
+        isOpen={downloadVaultsAsBatchModal}
+        onCancel={() => setSelectedCreatorIds([])}
+        onJobAdded={() => null}
+        setOpen={setDownloadAVaultsAsBatchModal}
+      />
+    </div>
+  );
+};

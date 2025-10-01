@@ -2,134 +2,100 @@
 
 import { TerminateDownloadingModal } from '@/components/modals/TerminateDownloadingModal';
 import { TerminateImportingJobsModal } from '@/components/modals/TerminateImportingJobsModal';
-import { Button } from '@/components/ui/button';
+import { Paginate } from '@/components/Paginate';
+import { ScrollToTheBottom } from '@/components/ScrollToTheBottom';
+import { ScrollToTheTop } from '@/components/ScrollToTheTop';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useExtendedUsersContextVaults } from '@/hooks/context/ExtendedUsersContext';
 import { EventTypes } from '@/lib/constants';
 import { GET_ALL_CREATORS_QUERY } from '@/packages/gql/api/adminAPI';
-import { GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY } from '@/packages/gql/api/vaultsAPI';
-import { DownloadStates, ExtendedUsersEntity } from '@/packages/gql/generated/graphql';
+import { ExtendedUsersEntity, GetAllCreatorsOutput, GetCreatorsByAdminQuery } from '@/packages/gql/generated/graphql';
 import { configService } from '@/util/config';
-import { buildSafeUrl } from '@/util/helpers';
+import { buildSafeUrl, handleScrollToTheEnd, handleScrollToTheTop } from '@/util/helpers';
 import { Div } from '@/wrappers/HTMLWrappers';
-import { useLazyQuery, useQuery } from '@apollo/client/react';
-import { ArrowBigDown, Ban, CheckLine, ListTodo, LoaderIcon, RefreshCcw } from 'lucide-react';
+import { PageWrapper } from '@/wrappers/PageWrapper';
+import { useQuery } from '@apollo/client/react';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { VaultsHeader } from './VaultsHeader';
 import { VaultUrls } from './VaultUrls';
 
-const statusLabels: Record<DownloadStates, string> = {
-  [DownloadStates.Fulfilled]: 'Total downloaded objects',
-  [DownloadStates.Pending]: 'Total pending objects',
-  [DownloadStates.Processing]: 'Total processing objects',
-  [DownloadStates.Rejected]: 'Total rejected objects'
-};
-
-const statusButtons = [
-  {
-    className: 'text-xs font-medium bg-blue-500 text-white',
-    status: DownloadStates.Fulfilled,
-    icon: <CheckLine />
-  },
-  {
-    className: 'text-xs font-medium animate-pulse',
-    status: DownloadStates.Pending,
-    icon: <ListTodo />
-  },
-  {
-    className: 'text-xs font-medium bg-orange-500 text-white dark:bg-emerald-400',
-    status: DownloadStates.Processing,
-    icon: <LoaderIcon />
-  },
-  {
-    className: 'text-xs font-medium bg-red-500 text-white dark:bg-red-600',
-    status: DownloadStates.Rejected,
-    icon: <Ban />
-  }
-];
 export const Vaults = () => {
+  const searchParams = useSearchParams();
   const endRef = useRef<HTMLDivElement>(null);
-  const [hasNext, setHasNext] = useState<boolean>(false);
-  const [getCountOfObjects] = useLazyQuery(GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY);
-  const { data, refetch, fetchMore, loading } = useQuery(GET_ALL_CREATORS_QUERY, { variables: { input: { limit: 100, offset: 0 } } });
-  const [dataLength, setDataLength] = useState<number>(data?.getCreatorsByAdmin.creators.length || 0);
-  const { creatorVaults, setCreatorVaults } = useExtendedUsersContextVaults();
-  const hasProcessing = creatorVaults.some((creatorVault) => creatorVault.processingObjectCount > 0);
+  const topRef = useRef<HTMLDivElement>(null);
+
+  const [selectedCreatorIds, setSelectedCreatorIds] = useState<string[]>([]);
+  const [filterText, setFilterText] = useState<string>('');
+  const [pageNumber, setPageNumber] = useState<number>(Number(searchParams.get('p') || 1));
+
+  const { data, refetch, updateQuery } = useQuery(GET_ALL_CREATORS_QUERY, {
+    variables: { input: { take: 18, pageNumber } }
+  });
+
+  const {
+    count = 0,
+    creators = [],
+    hasNext = false,
+    hasPrev = false,
+    totalPages = 0
+  } = (data?.getCreatorsByAdmin ?? {}) as GetAllCreatorsOutput;
+
+  const creatorVaults = creators as ExtendedUsersEntity[];
 
   const handleRefetch = async () => {
-    const { data } = await refetch();
-    setCreatorVaults(data?.getCreatorsByAdmin.creators as ExtendedUsersEntity[]);
+    await refetch({ input: { take: 18, pageNumber } });
   };
 
-  const handleGetCountOfObjects = async (status: DownloadStates) => {
-    try {
-      toast.loading('Fetching latest count...');
-      const { data } = await getCountOfObjects({ variables: { input: { status } } });
-      toast.dismiss();
-      toast.success(data?.getTotalObjectsAsType, {
-        description: statusLabels[status]
-      });
-      return data?.getTotalObjectsAsType;
-    } catch {
-      toast.dismiss();
-      toast.error('Something wrong happened!');
-    }
+  const toggleCreatorSelection = (creatorId: string) => {
+    setSelectedCreatorIds((prev) => (prev.includes(creatorId) ? prev.filter((id) => id !== creatorId) : [...prev, creatorId]));
+  };
+  const handleSelectN = (n: number) => {
+    const ids = creatorVaults
+      .filter((v) => v.pendingObjectCount !== 0)
+      .slice(0, n)
+      .map((v) => v.id);
+    setSelectedCreatorIds(ids);
   };
 
-  const handleScrollToTheEnd = () => {
-    requestAnimationFrame(() => {
-      endRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
-    });
-  };
-
-  const handleFetchMore = async () => {
-    const { data: newData } = await fetchMore({
-      variables: { input: { offset: creatorVaults?.length, limit: 100 } },
-
-      updateQuery: (previousQueryResult, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return previousQueryResult;
-        return {
-          getCreatorsByAdmin: {
-            ...previousQueryResult.getCreatorsByAdmin,
-            vaultObjects: [...previousQueryResult.getCreatorsByAdmin.creators, ...fetchMoreResult.getCreatorsByAdmin.creators],
-            count: fetchMoreResult.getCreatorsByAdmin.count || 0
-          }
-        };
-      }
-    });
-
-    setHasNext(!!newData?.getCreatorsByAdmin.creators.length);
-    setDataLength(data?.getCreatorsByAdmin.count || 0);
-  };
+  const filteredVaults = filterText
+    ? creatorVaults.filter(
+        (c) =>
+          c.id.toLowerCase().includes(filterText.toLowerCase()) || (c.firstName?.toLowerCase() ?? '').includes(filterText.toLowerCase())
+      )
+    : creatorVaults;
 
   useEffect(() => {
-    if (!hasProcessing) return;
-
     const es = new EventSource(buildSafeUrl({ host: configService.NEXT_PUBLIC_API_URL, pathname: '/sse/stream' }));
-    es.onopen = () => {
-      toast.success('SSE connection opened.');
-    };
 
     es.addEventListener(EventTypes.VaultDownload, (event) => {
       const { creatorId, data } = JSON.parse(event.data);
-      setCreatorVaults((prev) =>
-        prev.map((creator) =>
-          creator.id === creatorId
-            ? {
-                ...creator,
-                fulfilledObjectCount: data.status === 'FULFILLED' ? creator.fulfilledObjectCount + 1 : creator.fulfilledObjectCount,
-                rejectedObjectCount: data.status === 'REJECTED' ? creator.rejectedObjectCount + 1 : creator.rejectedObjectCount,
-                pendingObjectCount: data.status === 'PENDING' ? creator.pendingObjectCount + 1 : creator.pendingObjectCount,
-                processingObjectCount: creator.processingObjectCount - 1
-              }
-            : creator
-        )
-      );
+
+      updateQuery((prev) => {
+        if (!prev?.getCreatorsByAdmin) return prev as GetCreatorsByAdminQuery;
+
+        return {
+          getCreatorsByAdmin: {
+            ...prev.getCreatorsByAdmin,
+            creators:
+              prev.getCreatorsByAdmin.creators &&
+              prev.getCreatorsByAdmin.creators.map((c) =>
+                c && c.id === creatorId
+                  ? {
+                      ...c,
+                      fulfilledObjectCount: data.status === 'FULFILLED' ? (c.fulfilledObjectCount ?? 0) + 1 : c.fulfilledObjectCount,
+                      rejectedObjectCount: data.status === 'REJECTED' ? (c.rejectedObjectCount ?? 0) + 1 : c.rejectedObjectCount,
+                      pendingObjectCount: data.status === 'PENDING' ? (c.pendingObjectCount ?? 0) + 1 : c.pendingObjectCount,
+                      processingObjectCount: Math.max((c.processingObjectCount ?? 0) - 1, 0)
+                    }
+                  : c
+              ),
+            count: prev.getCreatorsByAdmin.count
+          }
+        } as GetCreatorsByAdminQuery;
+      });
     });
-
-    es.addEventListener(EventTypes.ImportObject, (event) => {
-
-    })
 
     es.addEventListener(EventTypes.ImportCompleted, (event) => {
       const { data } = JSON.parse(event.data);
@@ -142,99 +108,72 @@ export const Vaults = () => {
 
     es.addEventListener(EventTypes.VaultDownloadCompleted, (event) => {
       const { data } = JSON.parse(event.data);
-      toast.success('Streaming is off!', {
+      toast.success('Vault download operation', {
         description: data.finalMessage,
         closeButton: true,
         position: 'bottom-center'
       });
-      es.close();
     });
-
-    es.onerror = (error) => {
-      console.error('SSE Error:', error);
-      es.close();
-    };
-    return () => es.close();
-  }, [hasProcessing]); //eslint-disable-line
-
-  // useEffect(() => {
-  //   if (data?.getCreatorsByAdmin.creators.length) {
-  //     setCreatorVaults(data.getCreatorsByAdmin.creators as ExtendedUsersEntity[]);
-  //   }
-  // }, [data]); //eslint-disable-line
-
-  useEffect(() => {
-    setDataLength(data?.getCreatorsByAdmin.count || 0);
-  }, [loading]); //eslint-disable-line
-
-  useEffect(() => {
-    setHasNext(true);
-  }, []);
-
-  useEffect(() => {
-    handleRefetch();
   }, []); //eslint-disable-line
 
   return (
-    <div>
-      <Div className="flex items-center justify-between space-x-1 sticky top-15 ">
-        <Div className="flex flex-row space-x-2">
-          <Button>{dataLength}</Button>
-        </Div>
-        <Div className="flex flex-row space-x-2">
-          <Button variant="outline" className="ml-auto" onClick={handleRefetch}>
-            <RefreshCcw />
-          </Button>
-          {statusButtons.map(({ className, icon, status }, idx) => (
-            <Button key={idx} className={className} onClick={() => handleGetCountOfObjects(status)}>
-              {icon}
-            </Button>
-          ))}
-        </Div>
-      </Div>
-      {creatorVaults.length ? (
-        <div className="relative">
-          <ScrollArea className="overflow-y-auto h-[calc(100vh-140px)] w-full p-1">
-            {creatorVaults.map((creator, idx) => (
-              <Div key={idx} className="flex flex-col rounded-md border my-1 p-2">
+    <PageWrapper className="w-full">
+      <VaultsHeader
+        count={count}
+        selectedCreatorIds={selectedCreatorIds}
+        onRefetch={handleRefetch}
+        onSelectN={handleSelectN}
+        onFilter={setFilterText}
+        setSelectedCreatorIds={setSelectedCreatorIds}
+        filteredVaults={filteredVaults}
+      />
+
+      {filteredVaults && filteredVaults.length ? (
+        <div className="relative h-full">
+          <ScrollArea className="h-[calc(100vh-140px)] w-full p-1">
+            <div ref={topRef} />
+            {filteredVaults.map((creator, idx) => (
+              <Div key={creator.id ?? idx} className="flex flex-col rounded-md border my-1 p-2">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Checkbox checked={selectedCreatorIds.includes(creator.id)} onCheckedChange={() => toggleCreatorSelection(creator.id)} />
+                  <span className="text-sm">{creator.id}</span>
+                </div>
                 <VaultUrls
                   idx={idx}
-                  creator={creator as ExtendedUsersEntity}
+                  creator={creator}
                   onJobAdded={handleRefetch}
-                  onUpdateCreator={(updated) => setCreatorVaults((prev) => prev.map((c) => (c.id === updated.id ? updated : c)))}
+                  onUpdateCreator={(updated) =>
+                    updateQuery((prev) => {
+                      if (!prev?.getCreatorsByAdmin) return prev as GetCreatorsByAdminQuery;
+
+                      return {
+                        getCreatorsByAdmin: {
+                          ...prev.getCreatorsByAdmin,
+                          creators:
+                            prev.getCreatorsByAdmin.creators &&
+                            prev.getCreatorsByAdmin.creators.map((c) => (c && c.id === updated.id ? updated : c)),
+                          count: prev.getCreatorsByAdmin.count
+                        }
+                      } as GetCreatorsByAdminQuery;
+                    })
+                  }
                 />
               </Div>
             ))}
-            {hasNext ? (
-              <Div className="flex items-center justify-center space-x-2">
-                <Div className="space-x-2">
-                  <Button variant="outline" size="sm" onClick={handleFetchMore}>
-                    Next
-                  </Button>
-                </Div>
-              </Div>
-            ) : (
-              <Div className="text-center tracking-tight py-4">
-                <p>Looks like you have reached at the end!</p>
-              </Div>
-            )}
             <div ref={endRef} />
           </ScrollArea>
-          <Button
-            variant={'default'}
-            className="cursor-pointer absolute bottom-10 right-4 rounded-full z-50 shadow-lg"
-            onClick={handleScrollToTheEnd}
-          >
-            <ArrowBigDown />
-          </Button>
+          <ScrollToTheTop onClick={() => handleScrollToTheTop(topRef)} />
+          <ScrollToTheBottom onClick={() => handleScrollToTheEnd(endRef)} />
+          <Paginate hasNext={hasNext} hasPrev={hasPrev} pageNumber={pageNumber} totalPages={totalPages} setPageNumber={setPageNumber} />
         </div>
       ) : (
         <Div className="text-center">
           <p>Looks like there is nothing here</p>
         </Div>
       )}
+
       <TerminateImportingJobsModal />
       <TerminateDownloadingModal />
-    </div>
+    </PageWrapper>
   );
 };
