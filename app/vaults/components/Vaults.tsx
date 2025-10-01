@@ -31,7 +31,7 @@ export const Vaults = () => {
   const [pageNumber, setPageNumber] = useState<number>(Number(searchParams.get('p') || 1));
 
   const { data, refetch, updateQuery } = useQuery(GET_ALL_CREATORS_QUERY, {
-    variables: { input: { take: 18, pageNumber } }
+    variables: { input: { take: 100, pageNumber } }
   });
 
   const {

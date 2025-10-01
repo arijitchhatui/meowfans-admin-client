@@ -18,7 +18,7 @@ import { AssetCards } from './AssetCards';
 export const Assets = () => {
   const searchParams = useSearchParams();
   const [pageNumber, setPageNumber] = useState<number>(Number(searchParams.get('p') || 1));
-  const { data, refetch } = useQuery(GET_ALL_CREATORS_QUERY, { variables: { input: { take: 18, pageNumber } } });
+  const { data, refetch } = useQuery(GET_ALL_CREATORS_QUERY, { variables: { input: { take: 100, pageNumber } } });
   const [filterText, setFilterText] = useState<string>('');
   const endRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
