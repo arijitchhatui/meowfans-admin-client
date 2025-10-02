@@ -112,9 +112,27 @@ export const VaultsHeader: React.FC<Props> = ({
               data.status === 'REJECTED'
                 ? (prev.getCountOfObjectsOfEachType?.rejected || 0) + 1
                 : prev.getCountOfObjectsOfEachType?.rejected,
-            pending:
-              data.status === 'PENDING' ? (prev.getCountOfObjectsOfEachType?.pending || 0) + 1 : prev.getCountOfObjectsOfEachType?.pending,
-            processing: Math.max((prev.getCountOfObjectsOfEachType?.processing || 0) - 1, 0)
+            pendingObjectCount: Math.max((prev.getCountOfObjectsOfEachType?.pending ?? 0) - 1, 0),
+            processingObjectCount:
+              data.status === 'PROCESSING'
+                ? (prev.getCountOfObjectsOfEachType?.processing || 0) + 1
+                : Math.max((prev.getCountOfObjectsOfEachType?.processing ?? 0) - 1, 0)
+          }
+        } as GetCountOfObjectsOfEachTypeQuery;
+      });
+    });
+
+    es.addEventListener(EventTypes.ImportObject, (event) => {
+      const { data } = JSON.parse(event.data);
+      updateAllObjectsCount((prev) => {
+        return {
+          ...prev,
+          getCountOfObjectsOfEachType: {
+            ...prev.getCountOfObjectsOfEachType,
+            pendingObjectCount:
+              data.status === 'PENDING'
+                ? Math.max((prev.getCountOfObjectsOfEachType?.pending ?? 0) + 1, 0)
+                : prev.getCountOfObjectsOfEachType?.pending
           }
         } as GetCountOfObjectsOfEachTypeQuery;
       });

@@ -6,6 +6,7 @@ import { GetCreatorProfileByAdminQuery } from '@/packages/gql/generated/graphql'
 import { Div } from '@/wrappers/HTMLWrappers';
 import { BadgeCheckIcon, Heart } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface Props {
   creatorInfo?: GetCreatorProfileByAdminQuery;
@@ -54,11 +55,13 @@ export const ProfileDescription: React.FC<Props> = ({ creatorInfo }) => {
         </CardContent>
 
         <CardFooter className="flex-col gap-2">
-          <Button type="submit" className="w-full">
-            Edit profile information
-          </Button>
+          <Link href={`/assets/${creatorInfo?.getCreatorProfileByAdmin.user.username}`}>
+            <Button className="w-full">Assets</Button>
+          </Link>
           <Div className="flex gap-3 justify-center">
-            <Button className="flex-1">Follow</Button>
+            <Link href={`/vaults/${creatorInfo?.getCreatorProfileByAdmin.user.username}`}>
+              <Button className="flex-1">Vaults</Button>
+            </Link>
             <Button variant="outline" className="flex-1">
               Message
             </Button>

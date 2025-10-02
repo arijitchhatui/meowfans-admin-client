@@ -23,3 +23,9 @@ export const GET_USER_QUERY = graphql(`
     }
   }
 `);
+
+export const UPDATE_ALL_CREATOR_PROFILES_MUTATION = graphql(`
+  mutation UpdateAllCreatorProfiles($input: UpdateUsersInput!) {
+    updateAllCreatorProfiles(input: $input)
+  }
+`);

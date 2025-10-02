@@ -54,6 +54,7 @@ type Documents = {
     "\n  mutation SavePost($input: SavePostInput!) {\n    savePost(input: $input) {\n      caption\n      commentCount\n      createdAt\n      creatorId\n      deletedAt\n      id\n      likeCount\n      saveCount\n      shareCount\n      totalEarning\n      types\n      unlockPrice\n      updatedAt\n    }\n  }\n": typeof types.SavePostDocument,
     "\n  mutation DeleteUser {\n    deleteUser\n  }\n": typeof types.DeleteUserDocument,
     "\n  query GetUser($username: String!) {\n    getUser(username: $username) {\n      avatarUrl\n      bannerUrl\n      createdAt\n      deletedAt\n      firstName\n      id\n      lastLoginAt\n      lastName\n      roles\n      updatedAt\n      username\n    }\n  }\n": typeof types.GetUserDocument,
+    "\n  mutation UpdateAllCreatorProfiles($input: UpdateUsersInput!) {\n    updateAllCreatorProfiles(input: $input)\n  }\n": typeof types.UpdateAllCreatorProfilesDocument,
     "\n  mutation DownloadCreatorObjectsAsBatch($input: UploadVaultQueueInput!) {\n    downloadCreatorObjectsAsBatch(input: $input)\n  }\n": typeof types.DownloadCreatorObjectsAsBatchDocument,
     "\n  mutation Terminate {\n    terminate\n  }\n": typeof types.TerminateDocument,
     "\n  query GetTotalObjectsAsType($input: PaginationInput!) {\n    getTotalObjectsAsType(input: $input)\n  }\n": typeof types.GetTotalObjectsAsTypeDocument,
@@ -101,6 +102,7 @@ const documents: Documents = {
     "\n  mutation SavePost($input: SavePostInput!) {\n    savePost(input: $input) {\n      caption\n      commentCount\n      createdAt\n      creatorId\n      deletedAt\n      id\n      likeCount\n      saveCount\n      shareCount\n      totalEarning\n      types\n      unlockPrice\n      updatedAt\n    }\n  }\n": types.SavePostDocument,
     "\n  mutation DeleteUser {\n    deleteUser\n  }\n": types.DeleteUserDocument,
     "\n  query GetUser($username: String!) {\n    getUser(username: $username) {\n      avatarUrl\n      bannerUrl\n      createdAt\n      deletedAt\n      firstName\n      id\n      lastLoginAt\n      lastName\n      roles\n      updatedAt\n      username\n    }\n  }\n": types.GetUserDocument,
+    "\n  mutation UpdateAllCreatorProfiles($input: UpdateUsersInput!) {\n    updateAllCreatorProfiles(input: $input)\n  }\n": types.UpdateAllCreatorProfilesDocument,
     "\n  mutation DownloadCreatorObjectsAsBatch($input: UploadVaultQueueInput!) {\n    downloadCreatorObjectsAsBatch(input: $input)\n  }\n": types.DownloadCreatorObjectsAsBatchDocument,
     "\n  mutation Terminate {\n    terminate\n  }\n": types.TerminateDocument,
     "\n  query GetTotalObjectsAsType($input: PaginationInput!) {\n    getTotalObjectsAsType(input: $input)\n  }\n": types.GetTotalObjectsAsTypeDocument,
@@ -282,6 +284,10 @@ export function graphql(source: "\n  mutation DeleteUser {\n    deleteUser\n  }\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query GetUser($username: String!) {\n    getUser(username: $username) {\n      avatarUrl\n      bannerUrl\n      createdAt\n      deletedAt\n      firstName\n      id\n      lastLoginAt\n      lastName\n      roles\n      updatedAt\n      username\n    }\n  }\n"): (typeof documents)["\n  query GetUser($username: String!) {\n    getUser(username: $username) {\n      avatarUrl\n      bannerUrl\n      createdAt\n      deletedAt\n      firstName\n      id\n      lastLoginAt\n      lastName\n      roles\n      updatedAt\n      username\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateAllCreatorProfiles($input: UpdateUsersInput!) {\n    updateAllCreatorProfiles(input: $input)\n  }\n"): (typeof documents)["\n  mutation UpdateAllCreatorProfiles($input: UpdateUsersInput!) {\n    updateAllCreatorProfiles(input: $input)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

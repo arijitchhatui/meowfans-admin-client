@@ -25,14 +25,10 @@ export const Vaults = () => {
   const searchParams = useSearchParams();
   const endRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
-
-  const [selectedCreatorIds, setSelectedCreatorIds] = useState<string[]>([]);
   const [filterText, setFilterText] = useState<string>('');
+  const [selectedCreatorIds, setSelectedCreatorIds] = useState<string[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(Number(searchParams.get('p') || 1));
-
-  const { data, refetch, updateQuery } = useQuery(GET_ALL_CREATORS_QUERY, {
-    variables: { input: { take: 100, pageNumber } }
-  });
+  const { data, refetch, updateQuery } = useQuery(GET_ALL_CREATORS_QUERY, { variables: { input: { take: 100, pageNumber } } });
 
   const {
     count = 0,
@@ -45,12 +41,13 @@ export const Vaults = () => {
   const creatorVaults = creators as ExtendedUsersEntity[];
 
   const handleRefetch = async () => {
-    await refetch({ input: { take: 18, pageNumber } });
+    await refetch({ input: { take: 100, pageNumber } });
   };
 
   const toggleCreatorSelection = (creatorId: string) => {
     setSelectedCreatorIds((prev) => (prev.includes(creatorId) ? prev.filter((id) => id !== creatorId) : [...prev, creatorId]));
   };
+
   const handleSelectN = (n: number) => {
     const ids = creatorVaults
       .filter((v) => v.pendingObjectCount !== 0)
@@ -61,8 +58,7 @@ export const Vaults = () => {
 
   const filteredVaults = filterText
     ? creatorVaults.filter(
-        (c) =>
-          c.id.toLowerCase().includes(filterText.toLowerCase()) || (c.firstName?.toLowerCase() ?? '').includes(filterText.toLowerCase())
+        (c) => c.id.toLowerCase().includes(filterText.toLowerCase()) || (c.username ?? '').includes(filterText.toLowerCase())
       )
     : creatorVaults;
 
@@ -86,8 +82,9 @@ export const Vaults = () => {
                       ...c,
                       fulfilledObjectCount: data.status === 'FULFILLED' ? (c.fulfilledObjectCount ?? 0) + 1 : c.fulfilledObjectCount,
                       rejectedObjectCount: data.status === 'REJECTED' ? (c.rejectedObjectCount ?? 0) + 1 : c.rejectedObjectCount,
-                      pendingObjectCount: data.status === 'PENDING' ? (c.pendingObjectCount ?? 0) + 1 : c.pendingObjectCount,
-                      processingObjectCount: Math.max((c.processingObjectCount ?? 0) - 1, 0)
+                      pendingObjectCount: Math.max((c.pendingObjectCount ?? 0) - 1, 0),
+                      processingObjectCount:
+                        data.status === 'PROCESSING' ? (c.processingObjectCount || 0) + 1 : Math.max((c.processingObjectCount || 0) - 1, 0)
                     }
                   : c
               ),
@@ -132,34 +129,40 @@ export const Vaults = () => {
         <div className="relative h-full">
           <ScrollArea className="h-[calc(100vh-140px)] w-full p-1">
             <div ref={topRef} />
-            {filteredVaults.map((creator, idx) => (
-              <Div key={creator.id ?? idx} className="flex flex-col rounded-md border my-1 p-2">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Checkbox checked={selectedCreatorIds.includes(creator.id)} onCheckedChange={() => toggleCreatorSelection(creator.id)} />
-                  <span className="text-sm">{creator.id}</span>
-                </div>
-                <VaultUrls
-                  idx={idx}
-                  creator={creator}
-                  onJobAdded={handleRefetch}
-                  onUpdateCreator={(updated) =>
-                    updateQuery((prev) => {
-                      if (!prev?.getCreatorsByAdmin) return prev as GetCreatorsByAdminQuery;
+            {filteredVaults
+              .slice()
+              .sort((a, b) => b.pendingObjectCount - a.pendingObjectCount)
+              .map((creator, idx) => (
+                <Div key={creator.id ?? idx} className="flex flex-col rounded-md border my-1 p-2">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Checkbox
+                      checked={selectedCreatorIds.includes(creator.id)}
+                      onCheckedChange={() => toggleCreatorSelection(creator.id)}
+                    />
+                    <span className="text-sm">{creator.id}</span>
+                  </div>
+                  <VaultUrls
+                    idx={idx}
+                    creator={creator}
+                    onJobAdded={handleRefetch}
+                    onUpdateCreator={(updated) =>
+                      updateQuery((prev) => {
+                        if (!prev?.getCreatorsByAdmin) return prev as GetCreatorsByAdminQuery;
 
-                      return {
-                        getCreatorsByAdmin: {
-                          ...prev.getCreatorsByAdmin,
-                          creators:
-                            prev.getCreatorsByAdmin.creators &&
-                            prev.getCreatorsByAdmin.creators.map((c) => (c && c.id === updated.id ? updated : c)),
-                          count: prev.getCreatorsByAdmin.count
-                        }
-                      } as GetCreatorsByAdminQuery;
-                    })
-                  }
-                />
-              </Div>
-            ))}
+                        return {
+                          getCreatorsByAdmin: {
+                            ...prev.getCreatorsByAdmin,
+                            creators:
+                              prev.getCreatorsByAdmin.creators &&
+                              prev.getCreatorsByAdmin.creators.map((c) => (c && c.id === updated.id ? updated : c)),
+                            count: prev.getCreatorsByAdmin.count
+                          }
+                        } as GetCreatorsByAdminQuery;
+                      })
+                    }
+                  />
+                </Div>
+              ))}
             <div ref={endRef} />
           </ScrollArea>
           <ScrollToTheTop onClick={() => handleScrollToTheTop(topRef)} />

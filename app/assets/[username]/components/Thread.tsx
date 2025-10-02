@@ -85,7 +85,7 @@ export const AssetsThread: React.FC<Props> = ({ assets, onLoadMore, onSlideShow,
           </Div>
         ) : (
           <Div className="text-center tracking-tight py-4">
-            <p>Looks like you have reached at the end!</p>
+            <p>✨Looks like you have reached at the end!✨</p>
           </Div>
         )}
       </ScrollArea>
