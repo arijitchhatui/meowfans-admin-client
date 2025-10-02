@@ -28,6 +28,8 @@ export const UpdateAllCreatorProfilesModal: React.FC<Props> = ({ isOpen, onClose
       toast.success(data?.updateAllCreatorProfiles);
     } catch {
       toast.error('Something wrong happened!');
+    } finally {
+      handleClose();
     }
   };
   return (
