@@ -74,9 +74,12 @@ export const Assets = () => {
           <ScrollArea className="h-[calc(100vh-150px)] w-full p-4">
             <div ref={topRef} />
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredCreators.map((creator, idx) => (
-                <AssetCards key={creator.id ?? idx} creator={creator as ExtendedUsersEntity} pageNumber={pageNumber} />
-              ))}
+              {filteredCreators
+                .slice()
+                .sort((a, b) => b.assetCount - a.assetCount)
+                .map((creator, idx) => (
+                  <AssetCards key={creator.id ?? idx} creator={creator as ExtendedUsersEntity} pageNumber={pageNumber} />
+                ))}
             </div>
             <div ref={endRef} />
           </ScrollArea>
