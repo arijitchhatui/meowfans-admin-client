@@ -38,7 +38,7 @@ export const CreatorAssets: React.FC<Props> = ({ data: creatorData }) => {
     refetch,
     fetchMore
   } = useQuery(GET_CREATORS_ASSETS_QUERY, {
-    variables: { input: { limit: 50, offset: 0, assetType: assetType, relatedUserId: creatorData?.getUser.id, orderBy: SortOrder.Desc } }
+    variables: { input: { limit: 50, offset: 0, assetType: assetType, relatedUserId: creatorData?.getUser.id, orderBy: SortOrder.Asc } }
   });
 
   const handleRefetch = async () => {
@@ -52,7 +52,7 @@ export const CreatorAssets: React.FC<Props> = ({ data: creatorData }) => {
           offset: assets?.getCreatorAssetsByAdmin.length,
           limit: 50,
           assetType: assetType,
-          orderBy: SortOrder.Desc,
+          orderBy: SortOrder.Asc,
           relatedUserId: creatorData?.getUser.id
         }
       },
