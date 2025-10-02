@@ -1,13 +1,14 @@
 'use client';
 
 import { Separator } from '@/components/ui/separator';
-import { GET_CREATORS_ASSETS_QUERY } from '@/packages/gql/api/adminAPI';
+import { GET_ALL_CREATORS_QUERY, GET_CREATORS_ASSETS_QUERY } from '@/packages/gql/api/adminAPI';
 import { UPDATE_CREATOR_PROFILE_BY_ADMIN_MUTATION } from '@/packages/gql/api/creatorAPI';
 import { AssetType, ExtendedUpdateCreatorProfileInput, GetUserQuery, SortOrder } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { PageWrapper } from '@/wrappers/PageWrapper';
 import { useAssetsStore } from '@/zustand/assets.store';
 import { useMutation, useQuery } from '@apollo/client/react';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { AssetsHeader } from './Header';
@@ -19,13 +20,18 @@ interface Props {
 }
 
 export const CreatorAssets: React.FC<Props> = ({ data: creatorData }) => {
+  const searchParams = useSearchParams();
   const [slideShow, setSlideShow] = useState<boolean>(false);
   const [slideUrls, setSlideUrls] = useState<string[]>([]);
   const [assetType, setAssetType] = useState<AssetType>(AssetType.Private);
   const [hasNext, setHasNext] = useState<boolean>(true);
   const { updated } = useAssetsStore();
 
-  const [updateCreatorProfile] = useMutation(UPDATE_CREATOR_PROFILE_BY_ADMIN_MUTATION);
+  const [updateCreatorProfile] = useMutation(UPDATE_CREATOR_PROFILE_BY_ADMIN_MUTATION, {
+    refetchQueries() {
+      return [{ query: GET_ALL_CREATORS_QUERY, variables: { input: { take: 100, pageNumber: Number(searchParams.get('p') || 1) } } }];
+    }
+  });
 
   const {
     data: assets,
@@ -62,9 +68,7 @@ export const CreatorAssets: React.FC<Props> = ({ data: creatorData }) => {
   const handleUpdateCreatorProfile = async (input: ExtendedUpdateCreatorProfileInput) => {
     try {
       if (!creatorData?.getUser.id) return;
-      await updateCreatorProfile({
-        variables: { input }
-      });
+      await updateCreatorProfile({ variables: { input } });
       toast.success('Updated creator profile');
     } catch {
       toast.error('Something wrong happened'!);

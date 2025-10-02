@@ -1,10 +1,11 @@
 import { SAvatar } from '@/components/Avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExtendedUsersEntity } from '@/packages/gql/generated/graphql';
-import { BadgeCheckIcon, Heart } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { ExtendedUsersEntity, UserRoles } from '@/packages/gql/generated/graphql';
+import { BadgeCheckIcon, Ban, BarChart3, GalleryHorizontalEnd, GalleryVertical, Pencil, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface Props {
   creator: ExtendedUsersEntity;
@@ -12,56 +13,75 @@ interface Props {
 
 export const CreatorProfilesArea: React.FC<Props> = ({ creator }) => {
   return (
-    <div className="w-full flex justify-end relative">
-      <Card className="w-full max-w-sm mt-1 overflow-hidden">
-        <CardHeader>
-          <CardTitle>{creator?.username}</CardTitle>
-          <CardAction>
-            <Badge variant="secondary" className="bg-blue-500 text-white dark:bg-blue-600 flex items-center gap-1">
-              <BadgeCheckIcon className="w-4 h-4" />
-              {creator?.roles}
-            </Badge>
-          </CardAction>
-        </CardHeader>
+    <Card className="w-full max-w-sm overflow-hidden border shadow-sm hover:shadow-md transition-all duration-300">
+      <div className="relative w-full h-32 md:h-40">
+        <Image unoptimized fill src={creator?.bannerUrl || '/assets/1.jpg'} alt={creator?.username || ''} className="object-cover" />
+        <div className="absolute top-2 right-2">
+          <Badge
+            variant="secondary"
+            className={`px-2 py-1 rounded-full text-xs font-medium ${
+              creator.roles?.includes(UserRoles.Creator) ? 'bg-green-600 text-white' : 'bg-blue-500 text-white'
+            }`}
+          >
+            <BadgeCheckIcon className="w-3 h-3 mr-1" />
+            {creator?.roles}
+          </Badge>
+        </div>
+      </div>
 
-        <Image
-          unoptimized
-          src={creator?.bannerUrl || './assets/1/jpg'}
-          alt={creator?.username || ''}
-          width={'100'}
-          height={300}
-          className="relative w-full md:h-40 h-20 bg-center bg-cover rounded-md"
+      <CardHeader className="flex flex-col items-center -mt-12">
+        <SAvatar
+          fallback="profile"
+          url={creator?.avatarUrl}
+          className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-background shadow-md"
         />
+        <CardTitle className="mt-3 text-lg font-semibold">{creator?.username}</CardTitle>
+        <CardDescription className="text-sm text-muted-foreground">
+          {creator?.firstName} {creator?.lastName}
+        </CardDescription>
+      </CardHeader>
 
-        <CardContent className="relative flex justify-between md:justify-center">
-          <SAvatar
-            fallback="profile"
-            url={creator?.avatarUrl}
-            className="md:w-40 md:h-40 w-20 h-20 rounded-full border-4shadow-md -mt-16"
-          />
-          <div className="flex flex-row justify-end md:hidden gap-1">
-            <Badge variant="secondary" className="bg-blue-500 text-white dark:bg-blue-600 flex items-center gap-1">
-              <BadgeCheckIcon className="w-3 h-3" />
-              {creator?.assetCount}
-            </Badge>
-            <Badge variant="secondary" className="bg-blue-500 text-white dark:bg-blue-600 flex items-center gap-1">
-              <Heart className="w-3 h-3" />
-              {creator?.vaultCount}
-            </Badge>
-          </div>
-        </CardContent>
+      <CardContent className="flex justify-around py-2 text-sm text-muted-foreground">
+        <div className="flex flex-col items-center">
+          <span className="font-semibold">{creator?.assetCount}</span>
+          <span>Assets</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="font-semibold">{creator?.vaultCount}</span>
+          <span>Vaults</span>
+        </div>
+      </CardContent>
 
-        <CardFooter className="flex-col gap-2 p-0 justify-center">
-          <div className="flex flex-row gap-3 justify-around w-full">
-            <Button variant={'outline'}>Edit profile</Button>
-            <Button variant={'outline'}>Follow</Button>
-          </div>
-          <div className="flex flex-row gap-3 justify-between w-full">
-            <Button variant="outline">Subscribe</Button>
-            <Button variant="outline">Message</Button>
-          </div>
-        </CardFooter>
-      </Card>
-    </div>
+      <CardFooter className="flex flex-row gap-2 p-4">
+        <div className="flex flex-col justify-around gap-2 w-full">
+          <Link href={`/vaults/${creator.username}`}>
+            <Button className="flex-1">
+              <GalleryVertical className="w-4 h-4 mr-1" />
+              Vaults
+            </Button>
+          </Link>
+          <Button size="sm" variant="outline" className="w-full">
+            <Pencil className="w-4 h-4 mr-1" /> Edit
+          </Button>
+          <Button size="sm" variant="secondary" className="w-full">
+            <ShieldCheck className="w-4 h-4 mr-1" /> Authorize
+          </Button>
+        </div>
+        <div className="flex flex-col justify-around gap-2 w-full">
+          <Link href={`/assets/${creator.username}`}>
+            <Button className="w-full">
+              <GalleryHorizontalEnd className="w-4 h-4 mr-1" />
+              Assets
+            </Button>
+          </Link>
+          <Button size="sm" variant="outline" className="w-full">
+            <BarChart3 className="w-4 h-4 mr-1" /> Analytics
+          </Button>
+          <Button size="sm" variant="destructive" className="w-full">
+            <Ban className="w-4 h-4 mr-1" /> Suspend
+          </Button>
+        </div>
+      </CardFooter>
+    </Card>
   );
 };

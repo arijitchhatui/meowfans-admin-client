@@ -1,6 +1,8 @@
+import { UpdateAllCreatorProfilesModal } from '@/components/modals/UpdateAllCreatorProfilesModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
+import { useState } from 'react';
 import DeleteAllAssets from './DeleteAssets';
 
 interface Props {
@@ -8,6 +10,7 @@ interface Props {
 }
 
 export const QuickActions: React.FC<Props> = ({ setDeleteAllAssetsModal }) => {
+  const [openUpdateAllCreatorsModal, setOpenUpdateAllCreatorsModal] = useState<boolean>(false);
   return (
     <Card>
       <CardHeader>
@@ -20,10 +23,14 @@ export const QuickActions: React.FC<Props> = ({ setDeleteAllAssetsModal }) => {
         <Button variant="outline" className="w-full justify-start">
           Export settings
         </Button>
+        <Button variant="outline" className="w-full justify-start" onClick={() => setOpenUpdateAllCreatorsModal(true)}>
+          Update all creator profiles
+        </Button>
         <Button variant="destructive" className="w-full justify-start">
           Reset to defaults
         </Button>
         <DeleteAllAssets setDeleteAllAssetsModal={setDeleteAllAssetsModal} />
+        <UpdateAllCreatorProfilesModal isOpen={openUpdateAllCreatorsModal} onClose={() => setOpenUpdateAllCreatorsModal(false)} />
       </CardContent>
     </Card>
   );
