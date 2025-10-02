@@ -129,7 +129,7 @@ export const VaultsHeader: React.FC<Props> = ({
           ...prev,
           getCountOfObjectsOfEachType: {
             ...prev.getCountOfObjectsOfEachType,
-            pendingObjectCount:
+            pending:
               data.status === 'PENDING'
                 ? Math.max((prev.getCountOfObjectsOfEachType?.pending ?? 0) + 1, 0)
                 : prev.getCountOfObjectsOfEachType?.pending
