@@ -45,7 +45,7 @@ export const DownloadCreatorsAllVaultsModal: React.FC<Props> = ({ isOpen, setOpe
     setLoading(true);
     try {
       await uploadVaults({
-        variables: { input: { relatedUserId: creator.id } }
+        variables: { input: { creatorIds: [creator.id] } }
       });
       onJobAdded();
       toast.success('Added to queue');
