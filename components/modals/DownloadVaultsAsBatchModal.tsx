@@ -40,14 +40,8 @@ export const DownloadVaultsAsBatchModal: React.FC<Props> = ({ isOpen, setOpen, c
   const handleUploadToVault = async () => {
     setLoading(true);
     try {
-      await Promise.all(
-        creators.map(
-          async (creator) =>
-            await uploadVaults({
-              variables: { input: { relatedUserId: creator.id } }
-            })
-        )
-      );
+      const creatorIds = creators.map((creator) => creator.id);
+      await uploadVaults({ variables: { input: { creatorIds } } });
       onJobAdded();
       toast.success('Added to queue');
     } catch (error) {

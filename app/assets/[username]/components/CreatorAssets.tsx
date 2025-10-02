@@ -38,7 +38,7 @@ export const CreatorAssets: React.FC<Props> = ({ data: creatorData }) => {
     refetch,
     fetchMore
   } = useQuery(GET_CREATORS_ASSETS_QUERY, {
-    variables: { input: { limit: 30, offset: 0, assetType: assetType, relatedUserId: creatorData?.getUser.id, orderBy: SortOrder.Asc } }
+    variables: { input: { limit: 50, offset: 0, assetType: assetType, relatedUserId: creatorData?.getUser.id, orderBy: SortOrder.Desc } }
   });
 
   const handleRefetch = async () => {
@@ -48,15 +48,25 @@ export const CreatorAssets: React.FC<Props> = ({ data: creatorData }) => {
   const handleLoadMore = async () => {
     const { data } = await fetchMore({
       variables: {
-        input: { offset: assets?.getCreatorAssetsByAdmin.length, limit: 30, assetType: assetType, relatedUserId: creatorData?.getUser.id }
+        input: {
+          offset: assets?.getCreatorAssetsByAdmin.length,
+          limit: 50,
+          assetType: assetType,
+          orderBy: SortOrder.Desc,
+          relatedUserId: creatorData?.getUser.id
+        }
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
+
+        const merged = [...prev.getCreatorAssetsByAdmin, ...fetchMoreResult.getCreatorAssetsByAdmin];
+
         return {
-          getCreatorAssetsByAdmin: [...prev.getCreatorAssetsByAdmin, ...fetchMoreResult.getCreatorAssetsByAdmin]
+          getCreatorAssetsByAdmin: Array.from(new Map(merged.map((asset) => [asset.id, asset])).values())
         };
       }
     });
+
     setSlideUrls((prev) => [...prev, ...(data?.getCreatorAssetsByAdmin.map(({ asset }) => asset.rawUrl) ?? [])]);
     setHasNext(!!data?.getCreatorAssetsByAdmin.length);
   };

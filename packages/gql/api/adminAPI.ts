@@ -154,7 +154,7 @@ export const GET_CREATOR_VAULT_OBJECTS_QUERY = graphql(`
 `);
 
 export const DOWNLOAD_ALL_CREATOR_OBJECTS_MUTATION = graphql(`
-  mutation DownloadAllCreatorObjects($input: PaginationInput!) {
+  mutation DownloadAllCreatorObjects($input: DownloadAllCreatorObjectsAsBatchInput!) {
     downloadAllCreatorObjects(input: $input)
   }
 `);
