@@ -112,8 +112,8 @@ export const VaultsHeader: React.FC<Props> = ({
               data.status === 'REJECTED'
                 ? (prev.getCountOfObjectsOfEachType?.rejected || 0) + 1
                 : prev.getCountOfObjectsOfEachType?.rejected,
-            pendingObjectCount: Math.max((prev.getCountOfObjectsOfEachType?.pending ?? 0) - 1, 0),
-            processingObjectCount:
+            pending: Math.max((prev.getCountOfObjectsOfEachType?.pending ?? 0) - 1, 0),
+            processing:
               data.status === 'PROCESSING'
                 ? (prev.getCountOfObjectsOfEachType?.processing || 0) + 1
                 : Math.max((prev.getCountOfObjectsOfEachType?.processing ?? 0) - 1, 0)
