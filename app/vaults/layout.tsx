@@ -9,6 +9,7 @@ interface Props {
 export default function VaultsLayout({ children }: Props) {
   return (
     <ExtendedUsersContextWrapper>
+      {children}
       <EventsProvider />
     </ExtendedUsersContextWrapper>
   );
