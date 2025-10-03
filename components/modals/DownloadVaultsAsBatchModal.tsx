@@ -57,7 +57,7 @@ export const DownloadVaultsAsBatchModal: React.FC<Props> = ({ isOpen, setOpen, c
       isOpen={isOpen}
       onClose={() => setOpen(false)}
       title={`Upload started for ${creators.length} creators`}
-      description={`Total ${creators.reduce((acc, curr) => acc + curr.pendingObjectCount, 0)} objects`}
+      description={`Start batch import`}
     >
       <div className="flex justify-center">
         <div className="gap-2 w-fit justify-self-start items-start flex">
