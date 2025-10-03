@@ -36,7 +36,8 @@ export const VaultsSSE: React.FC<Props> = ({ updateAllObjectsCount, updateCreato
                     ...c,
                     fulfilledObjectCount: data.status === 'FULFILLED' ? (c.fulfilledObjectCount ?? 0) + 1 : c.fulfilledObjectCount,
                     rejectedObjectCount: data.status === 'REJECTED' ? (c.rejectedObjectCount ?? 0) + 1 : c.rejectedObjectCount,
-                    pendingObjectCount: Math.max((c.pendingObjectCount ?? 0) - 1, 0),
+                    pendingObjectCount:
+                      data.status === 'PENDING' ? (c.pendingObjectCount || 0) + 1 : Math.max((c.pendingObjectCount || 0) - 1, 0),
                     processingObjectCount:
                       data.status === 'PROCESSING' ? (c.processingObjectCount || 0) + 1 : Math.max((c.processingObjectCount || 0) - 1, 0)
                   }
@@ -93,11 +94,19 @@ export const VaultsSSE: React.FC<Props> = ({ updateAllObjectsCount, updateCreato
   };
 
   useEffect(() => {
-    eventEmitter.addEventListener(EventTypes.VaultDownload, (event) => onUpdateCreatorsByAdminQuery(event as any));
-    eventEmitter.addEventListener(EventTypes.VaultDownloadCompleted, (event) => onVaultDownloadCompleted(event as any));
-    eventEmitter.addEventListener(EventTypes.VaultDownload, (event) => onImportObjectOrVaultDownload(event as any));
-    eventEmitter.addEventListener(EventTypes.ImportObject, (event) => onImportObjectOrVaultDownload(event as any));
-    eventEmitter.addEventListener(EventTypes.ImportCompleted, (event) => onImportCompleted(event as any));
+    // eventEmitter.addEventListener(EventTypes.VaultDownload, (event) => onUpdateCreatorsByAdminQuery(event as any));
+    // eventEmitter.addEventListener(EventTypes.VaultDownloadCompleted, (event) => onVaultDownloadCompleted(event as any));
+    // eventEmitter.addEventListener(EventTypes.VaultDownload, (event) => onImportObjectOrVaultDownload(event as any));
+    // eventEmitter.addEventListener(EventTypes.ImportObject, (event) => onImportObjectOrVaultDownload(event as any));
+    // eventEmitter.addEventListener(EventTypes.ImportCompleted, (event) => onImportCompleted(event as any));
+
+    // return () => {
+    //   eventEmitter.removeEventListener(EventTypes.VaultDownload, (event) => onUpdateCreatorsByAdminQuery(event as any));
+    //   eventEmitter.removeEventListener(EventTypes.VaultDownloadCompleted, (event) => onVaultDownloadCompleted(event as any));
+    //   eventEmitter.removeEventListener(EventTypes.VaultDownload, (event) => onImportObjectOrVaultDownload(event as any));
+    //   eventEmitter.removeEventListener(EventTypes.ImportObject, (event) => onImportObjectOrVaultDownload(event as any));
+    //   eventEmitter.removeEventListener(EventTypes.ImportCompleted, (event) => onImportCompleted(event as any));
+    // };
   }, []); //eslint-disable-line
   return null;
 };

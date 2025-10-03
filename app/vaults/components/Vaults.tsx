@@ -17,7 +17,6 @@ import { useSearchParams } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { VaultsHeader } from './VaultsHeader';
 import { VaultUrls } from './VaultUrls';
-import { VaultsSSE } from './VaultsSSE';
 
 export const Vaults = () => {
   const searchParams = useSearchParams();
@@ -88,7 +87,6 @@ export const Vaults = () => {
         selectedCreatorIds={selectedCreatorIds}
         onFilterBy={(stats) => setFilterBy(stats)}
       />
-      <VaultsSSE updateCreatorsByAdminQuery={updateQuery}/>
 
       {filteredVaults && filteredVaults.length ? (
         <div className="relative h-full">

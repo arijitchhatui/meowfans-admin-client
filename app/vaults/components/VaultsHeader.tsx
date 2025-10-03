@@ -176,7 +176,6 @@ export const VaultsHeader: React.FC<Props> = ({
           />
         </div>
       </div>
-      <VaultsSSE updateAllObjectsCount={updateAllObjectsCount} />
       <DownloadVaultsAsBatchModal
         creatorIds={selectedCreatorIds}
         isOpen={downloadVaultsAsBatchModal}
