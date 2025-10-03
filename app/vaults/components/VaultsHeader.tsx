@@ -226,7 +226,7 @@ export const VaultsHeader: React.FC<Props> = ({
         </div>
       </div>
       <DownloadVaultsAsBatchModal
-        creators={filteredVaults.filter((cr) => selectedCreatorIds.includes(cr.id))}
+        creatorIds={selectedCreatorIds}
         isOpen={downloadVaultsAsBatchModal}
         onCancel={() => setSelectedCreatorIds([])}
         onJobAdded={() => null}

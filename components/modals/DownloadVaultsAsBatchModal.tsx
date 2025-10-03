@@ -1,7 +1,7 @@
 'use client';
 
 import { DOWNLOAD_ALL_CREATOR_OBJECTS_MUTATION } from '@/packages/gql/api/adminAPI';
-import { AssetType, ExtendedUsersEntity } from '@/packages/gql/generated/graphql';
+import { AssetType } from '@/packages/gql/generated/graphql';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { useMutation } from '@apollo/client/react';
 import { useState } from 'react';
@@ -22,12 +22,12 @@ import { Modal } from './Modal';
 interface Props {
   onJobAdded: () => unknown;
   onCancel: () => unknown;
-  creators: ExtendedUsersEntity[];
+  creatorIds: string[];
   isOpen: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const DownloadVaultsAsBatchModal: React.FC<Props> = ({ isOpen, setOpen, creators, onCancel, onJobAdded }) => {
+export const DownloadVaultsAsBatchModal: React.FC<Props> = ({ isOpen, setOpen, creatorIds, onCancel, onJobAdded }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [destination, setDestination] = useState<AssetType>(AssetType.Private);
   const [uploadVaults] = useMutation(DOWNLOAD_ALL_CREATOR_OBJECTS_MUTATION);
@@ -40,7 +40,6 @@ export const DownloadVaultsAsBatchModal: React.FC<Props> = ({ isOpen, setOpen, c
   const handleUploadToVault = async () => {
     setLoading(true);
     try {
-      const creatorIds = creators.map((creator) => creator.id);
       await uploadVaults({ variables: { input: { creatorIds } } });
       onJobAdded();
       toast.success('Added to queue');
@@ -56,7 +55,7 @@ export const DownloadVaultsAsBatchModal: React.FC<Props> = ({ isOpen, setOpen, c
     <Modal
       isOpen={isOpen}
       onClose={() => setOpen(false)}
-      title={`Upload started for ${creators.length} creators`}
+      title={`Upload started for ${creatorIds.length} creatorIds`}
       description={`Start batch import`}
     >
       <div className="flex justify-center">
