@@ -1,8 +1,11 @@
 'use client';
 
 import { configService } from '@/util/config';
+import { eventEmitter } from '@/util/EventsEmitter';
 import { buildSafeUrl } from '@/util/helpers';
 import { useEffect } from 'react';
+
+
 
 export const EventsProvider = () => {
   useEffect(() => {
@@ -10,8 +13,9 @@ export const EventsProvider = () => {
     const es = new EventSource(sseURL);
 
     es.onmessage = (event) => {
+      console.log(event);
       const data = JSON.parse(event.data);
-      window.dispatchEvent(new CustomEvent(event.type, { detail: data }));
+      eventEmitter.dispatchEvent(new CustomEvent(event.type, { detail: data }));
     };
 
     return () => es.close();
