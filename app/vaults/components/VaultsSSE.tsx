@@ -1,6 +1,7 @@
 'use client';
 import { EventTypes } from '@/lib/constants';
 import { Exact, GetCountOfObjectsOfEachTypeQuery, GetCreatorsByAdminQuery, PaginationInput } from '@/packages/gql/generated/graphql';
+import { eventEmitter } from '@/util/EventsEmitter';
 import { UpdateQueryMapFn } from '@apollo/client';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
@@ -19,7 +20,7 @@ interface Props {
 
 export const VaultsSSE: React.FC<Props> = ({ updateAllObjectsCount, updateCreatorsByAdminQuery }) => {
   const onUpdateCreatorsByAdminQuery = (event: CustomEvent) => {
-    const { creatorId, data } = JSON.parse(event.detail);
+    const { creatorId, data } = event.detail;
 
     updateCreatorsByAdminQuery?.((prev) => {
       if (!prev?.getCreatorsByAdmin) return prev as GetCreatorsByAdminQuery;
@@ -48,7 +49,7 @@ export const VaultsSSE: React.FC<Props> = ({ updateAllObjectsCount, updateCreato
   };
 
   const onImportCompleted = (event: CustomEvent) => {
-    const { data } = JSON.parse(event.detail);
+    const { data } = event.detail;
     toast.success('Streaming is off!', {
       description: data.finalMessage,
       closeButton: true,
@@ -57,7 +58,7 @@ export const VaultsSSE: React.FC<Props> = ({ updateAllObjectsCount, updateCreato
   };
 
   const onVaultDownloadCompleted = (event: CustomEvent) => {
-    const { data } = JSON.parse(event.detail);
+    const { data } = event.detail;
     toast.success('Vault download operation', {
       description: data.finalMessage,
       closeButton: true,
@@ -66,7 +67,7 @@ export const VaultsSSE: React.FC<Props> = ({ updateAllObjectsCount, updateCreato
   };
 
   const onImportObjectOrVaultDownload = (event: CustomEvent) => {
-    const { data } = JSON.parse(event.detail);
+    const { data } = event.detail;
     updateAllObjectsCount?.((prev) => {
       return {
         ...prev,
@@ -92,11 +93,11 @@ export const VaultsSSE: React.FC<Props> = ({ updateAllObjectsCount, updateCreato
   };
 
   useEffect(() => {
-    window.addEventListener(EventTypes.VaultDownload, (e) => onUpdateCreatorsByAdminQuery(e as any));
-    window.addEventListener(EventTypes.VaultDownloadCompleted, (event) => onVaultDownloadCompleted(event as any));
-    window.addEventListener(EventTypes.VaultDownload, (event) => onImportObjectOrVaultDownload(event as any));
-    window.addEventListener(EventTypes.ImportObject, (event) => onImportObjectOrVaultDownload(event as any));
-    window.addEventListener(EventTypes.ImportCompleted, (event) => onImportCompleted(event as any));
+    eventEmitter.addEventListener(EventTypes.VaultDownload, (event) => onUpdateCreatorsByAdminQuery(event as any));
+    eventEmitter.addEventListener(EventTypes.VaultDownloadCompleted, (event) => onVaultDownloadCompleted(event as any));
+    eventEmitter.addEventListener(EventTypes.VaultDownload, (event) => onImportObjectOrVaultDownload(event as any));
+    eventEmitter.addEventListener(EventTypes.ImportObject, (event) => onImportObjectOrVaultDownload(event as any));
+    eventEmitter.addEventListener(EventTypes.ImportCompleted, (event) => onImportCompleted(event as any));
   }, []); //eslint-disable-line
   return null;
 };
