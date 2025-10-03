@@ -114,7 +114,7 @@ export const VaultsHeader: React.FC<Props> = ({
           <Button onClick={() => onSelectN(numToSelect)}>Select {numToSelect}</Button>
         </div>
 
-        <Input placeholder="Filter by ID or name..." value={filterText} onChange={(e) => setFilterText(e.target.value)} className="w-48" />
+        <Input name='idOrName' placeholder="Filter by ID or name..." value={filterText} onChange={(e) => setFilterText(e.target.value)} className="w-48" />
 
         <Button variant="outline" className="ml-auto" onClick={onRefetch}>
           <RefreshCcw />

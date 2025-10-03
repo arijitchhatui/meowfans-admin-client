@@ -15,7 +15,7 @@ export const EventsProvider = () => {
     es.onmessage = (event) => {
       console.log(event);
       const data = JSON.parse(event.data);
-      eventEmitter.dispatchEvent(new CustomEvent(event.type, { detail: data }));
+      eventEmitter.dispatchEvent(new CustomEvent(event.data.type, { detail: data }));
     };
 
     return () => es.close();
