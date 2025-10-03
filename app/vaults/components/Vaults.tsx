@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { EventTypes } from '@/lib/constants';
 import { GET_ALL_CREATORS_QUERY } from '@/packages/gql/api/adminAPI';
-import { ExtendedUsersEntity, GetAllCreatorsOutput, GetCreatorsByAdminQuery } from '@/packages/gql/generated/graphql';
+import { DownloadStates, ExtendedUsersEntity, GetAllCreatorsOutput, GetCreatorsByAdminQuery } from '@/packages/gql/generated/graphql';
 import { configService } from '@/util/config';
 import { buildSafeUrl, handleScrollToTheEnd, handleScrollToTheTop } from '@/util/helpers';
 import { Div } from '@/wrappers/HTMLWrappers';
@@ -26,6 +26,7 @@ export const Vaults = () => {
   const endRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const [filterText, setFilterText] = useState<string>('');
+  const [filterBy, setFilterBy] = useState<DownloadStates>(DownloadStates.Pending);
   const [selectedCreatorIds, setSelectedCreatorIds] = useState<string[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(Number(searchParams.get('p') || 1));
   const { data, refetch, updateQuery } = useQuery(GET_ALL_CREATORS_QUERY, { variables: { input: { take: 100, pageNumber } } });
@@ -61,6 +62,21 @@ export const Vaults = () => {
         (c) => c.id.toLowerCase().includes(filterText.toLowerCase()) || (c.username ?? '').includes(filterText.toLowerCase())
       )
     : creatorVaults;
+
+  const handleSortVaults = (a: ExtendedUsersEntity, b: ExtendedUsersEntity) => {
+    switch (filterBy) {
+      case DownloadStates.Rejected:
+        return b.rejectedObjectCount - a.rejectedObjectCount;
+      case DownloadStates.Pending:
+        return b.pendingObjectCount - a.pendingObjectCount;
+      case DownloadStates.Processing:
+        return b.processingObjectCount - a.processingObjectCount;
+      case DownloadStates.Fulfilled:
+        return b.fulfilledObjectCount - a.fulfilledObjectCount;
+      default:
+        return b.pendingObjectCount - a.pendingObjectCount;
+    }
+  };
 
   useEffect(() => {
     const es = new EventSource(buildSafeUrl({ host: configService.NEXT_PUBLIC_API_URL, pathname: '/sse/stream' }));
@@ -116,6 +132,8 @@ export const Vaults = () => {
   return (
     <PageWrapper className="w-full">
       <VaultsHeader
+        filterBy={filterBy}
+        onFilterBy={(stats) => setFilterBy(stats)}
         count={count}
         selectedCreatorIds={selectedCreatorIds}
         onRefetch={handleRefetch}
@@ -131,7 +149,7 @@ export const Vaults = () => {
             <div ref={topRef} />
             {filteredVaults
               .slice()
-              .sort((a, b) => b.pendingObjectCount - a.pendingObjectCount)
+              .sort((a, b) => handleSortVaults(a, b))
               .map((creator, idx) => (
                 <Div key={creator.id ?? idx} className="flex flex-col rounded-md border my-1 p-2">
                   <div className="flex items-center space-x-2 mb-2">

@@ -3,6 +3,15 @@
 import { LoadingButton } from '@/components/LoadingButton';
 import { DownloadVaultsAsBatchModal } from '@/components/modals/DownloadVaultsAsBatchModal';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/useMobile';
 import { EventTypes } from '@/lib/constants';
@@ -11,7 +20,8 @@ import { DownloadStates, ExtendedUsersEntity, GetCountOfObjectsOfEachTypeQuery }
 import { configService } from '@/util/config';
 import { buildSafeUrl } from '@/util/helpers';
 import { useLazyQuery, useQuery } from '@apollo/client/react';
-import { Ban, CheckLine, Download, ListTodo, LoaderIcon, RefreshCcw } from 'lucide-react';
+import { Ban, CheckLine, Download, ExternalLink, Funnel, ListTodo, LoaderIcon, RefreshCcw } from 'lucide-react';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -57,6 +67,8 @@ interface Props {
   onRefetch: () => unknown;
   onSelectN: (n: number) => void;
   onFilter: (text: string) => void;
+  filterBy: DownloadStates;
+  onFilterBy: (stats: DownloadStates) => unknown;
 }
 
 export const VaultsHeader: React.FC<Props> = ({
@@ -66,7 +78,9 @@ export const VaultsHeader: React.FC<Props> = ({
   selectedCreatorIds,
   setSelectedCreatorIds,
   onFilter,
-  filteredVaults
+  filteredVaults,
+  filterBy,
+  onFilterBy
 }) => {
   const [numToSelect, setNumToSelect] = useState<number>(30);
   const [filterText, setFilterText] = useState('');
@@ -154,34 +168,62 @@ export const VaultsHeader: React.FC<Props> = ({
         <Button variant="outline" className="ml-auto" onClick={onRefetch}>
           <RefreshCcw />
         </Button>
+        <div className="flex flex-row space-x-2 items-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Funnel />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>Types</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup value={filterBy} onValueChange={(val) => onFilterBy(val as DownloadStates)}>
+                <DropdownMenuRadioItem value={DownloadStates.Fulfilled}>Fulfilled</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value={DownloadStates.Pending}>Pending</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value={DownloadStates.Processing}>Processing</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value={DownloadStates.Rejected}>Rejected</DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
-      <div className="flex flex-row space-x-2">
-        {statusButtons.map(({ className, icon, status, label }, idx) => (
-          <Button key={idx} className={className} onClick={() => handleGetCountOfObjects(status)}>
-            {isMobile
-              ? icon
-              : getAllObjectsCount?.getCountOfObjectsOfEachType[label as keyof typeof getAllObjectsCount.getCountOfObjectsOfEachType]}
-          </Button>
-        ))}
-        <LoadingButton
-          variant="outline"
-          size="sm"
-          onClick={() => setDownloadAVaultsAsBatchModal(true)}
-          disabled={!selectedCreatorIds.length}
-          title={String(selectedCreatorIds.length)}
-          Icon={Download}
-        />
-        <LoadingButton
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setDownloadAVaultsAsBatchModal(false);
-            setSelectedCreatorIds([]);
-          }}
-          disabled={!selectedCreatorIds.length}
-          title={'Cancel'}
-        />
+      <div className="flex flex-col justify-between">
+        <div className="flex flex-row space-x-2">
+          {statusButtons.map(({ className, icon, status, label }, idx) => (
+            <Button key={idx} size={'lg'} className={className} onClick={() => handleGetCountOfObjects(status)}>
+              {isMobile ? (
+                icon
+              ) : (
+                <div className="flex flex-row gap-3">
+                  {getAllObjectsCount?.getCountOfObjectsOfEachType[label as keyof typeof getAllObjectsCount.getCountOfObjectsOfEachType]}
+                  <Link className="cursor-pointer" href={`?status=${label}`} onClick={(e) => e.preventDefault()}>
+                    <ExternalLink />
+                  </Link>
+                </div>
+              )}
+            </Button>
+          ))}
+          <LoadingButton
+            variant="outline"
+            size="sm"
+            onClick={() => setDownloadAVaultsAsBatchModal(true)}
+            disabled={!selectedCreatorIds.length}
+            title={String(selectedCreatorIds.length)}
+            Icon={Download}
+          />
+          <LoadingButton
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setDownloadAVaultsAsBatchModal(false);
+              setSelectedCreatorIds([]);
+            }}
+            disabled={!selectedCreatorIds.length}
+            title={'Cancel'}
+          />
+        </div>
       </div>
       <DownloadVaultsAsBatchModal
         creators={filteredVaults.filter((cr) => selectedCreatorIds.includes(cr.id))}

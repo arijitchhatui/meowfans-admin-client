@@ -36,6 +36,7 @@ export const ImportCreatorsSheet = () => {
   const [url, setUrl] = useState<string>('');
   const [start, setStart] = useState<number>(0);
   const [exclude, setExclude] = useState<number>(0);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [exceptions, setExceptions] = useState<string[]>([]);
   const [totalContent, setTotalContent] = useState<number>(0);
@@ -97,6 +98,7 @@ export const ImportCreatorsSheet = () => {
     setExclude(0);
     setIsNewCreator(false);
     setExceptions([]);
+    setIsOpen((prev) => !prev);
   };
 
   useEffect(() => {
@@ -123,7 +125,7 @@ export const ImportCreatorsSheet = () => {
   }, [url]);
 
   return (
-    <Sheet onOpenChange={handleClose}>
+    <Sheet onOpenChange={handleClose} open={isOpen}>
       <SheetTrigger asChild>
         <Button variant="outline">Import</Button>
       </SheetTrigger>

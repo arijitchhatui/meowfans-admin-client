@@ -37,6 +37,7 @@ export const ImportSingleCreatorSheet = () => {
   const [start, setStart] = useState<number>(0);
   const [getUser] = useLazyQuery(GET_USER_QUERY);
   const [exclude, setExclude] = useState<number>(0);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [creator, setCreator] = useState<GetUserQuery>();
   const [loading, setLoading] = useState<boolean>(false);
   const [exceptions, setExceptions] = useState<string[]>([]);
@@ -103,6 +104,7 @@ export const ImportSingleCreatorSheet = () => {
     setStart(0);
     setExclude(0);
     setExceptions([]);
+    setIsOpen((prev) => !prev);
   };
 
   useEffect(() => {
@@ -127,7 +129,7 @@ export const ImportSingleCreatorSheet = () => {
   }, [username]); //eslint-disable-line
 
   return (
-    <Sheet onOpenChange={handleClose}>
+    <Sheet onOpenChange={handleClose} open={isOpen}>
       <SheetTrigger asChild>
         <Button variant="outline">Import</Button>
       </SheetTrigger>
