@@ -7,19 +7,17 @@ import { ScrollToTheBottom } from '@/components/ScrollToTheBottom';
 import { ScrollToTheTop } from '@/components/ScrollToTheTop';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { EventTypes } from '@/lib/constants';
 import { GET_ALL_CREATORS_QUERY } from '@/packages/gql/api/adminAPI';
 import { DownloadStates, ExtendedUsersEntity, GetAllCreatorsOutput, GetCreatorsByAdminQuery } from '@/packages/gql/generated/graphql';
-import { configService } from '@/util/config';
-import { buildSafeUrl, handleScrollToTheEnd, handleScrollToTheTop } from '@/util/helpers';
+import { handleScrollToTheEnd, handleScrollToTheTop } from '@/util/helpers';
 import { Div } from '@/wrappers/HTMLWrappers';
 import { PageWrapper } from '@/wrappers/PageWrapper';
 import { useQuery } from '@apollo/client/react';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
+import { useRef, useState } from 'react';
 import { VaultsHeader } from './VaultsHeader';
 import { VaultUrls } from './VaultUrls';
+import { VaultsSSE } from './VaultsSSE';
 
 export const Vaults = () => {
   const searchParams = useSearchParams();
@@ -38,7 +36,6 @@ export const Vaults = () => {
     hasPrev = false,
     totalPages = 0
   } = (data?.getCreatorsByAdmin ?? {}) as GetAllCreatorsOutput;
-
   const creatorVaults = creators as ExtendedUsersEntity[];
 
   const handleRefetch = async () => {
@@ -78,70 +75,20 @@ export const Vaults = () => {
     }
   };
 
-  useEffect(() => {
-    const es = new EventSource(buildSafeUrl({ host: configService.NEXT_PUBLIC_API_URL, pathname: '/sse/stream' }));
-
-    es.addEventListener(EventTypes.VaultDownload, (event) => {
-      const { creatorId, data } = JSON.parse(event.data);
-
-      updateQuery((prev) => {
-        if (!prev?.getCreatorsByAdmin) return prev as GetCreatorsByAdminQuery;
-
-        return {
-          getCreatorsByAdmin: {
-            ...prev.getCreatorsByAdmin,
-            creators:
-              prev.getCreatorsByAdmin.creators &&
-              prev.getCreatorsByAdmin.creators.map((c) =>
-                c && c.id === creatorId
-                  ? {
-                      ...c,
-                      fulfilledObjectCount: data.status === 'FULFILLED' ? (c.fulfilledObjectCount ?? 0) + 1 : c.fulfilledObjectCount,
-                      rejectedObjectCount: data.status === 'REJECTED' ? (c.rejectedObjectCount ?? 0) + 1 : c.rejectedObjectCount,
-                      pendingObjectCount: Math.max((c.pendingObjectCount ?? 0) - 1, 0),
-                      processingObjectCount:
-                        data.status === 'PROCESSING' ? (c.processingObjectCount || 0) + 1 : Math.max((c.processingObjectCount || 0) - 1, 0)
-                    }
-                  : c
-              ),
-            count: prev.getCreatorsByAdmin.count
-          }
-        } as GetCreatorsByAdminQuery;
-      });
-    });
-
-    es.addEventListener(EventTypes.ImportCompleted, (event) => {
-      const { data } = JSON.parse(event.data);
-      toast.success('Streaming is off!', {
-        description: data.finalMessage,
-        closeButton: true,
-        position: 'bottom-center'
-      });
-    });
-
-    es.addEventListener(EventTypes.VaultDownloadCompleted, (event) => {
-      const { data } = JSON.parse(event.data);
-      toast.success('Vault download operation', {
-        description: data.finalMessage,
-        closeButton: true,
-        position: 'bottom-center'
-      });
-    });
-  }, []); //eslint-disable-line
-
   return (
     <PageWrapper className="w-full">
       <VaultsHeader
-        filterBy={filterBy}
-        onFilterBy={(stats) => setFilterBy(stats)}
-        count={count}
-        selectedCreatorIds={selectedCreatorIds}
+        setSelectedCreatorIds={setSelectedCreatorIds}
         onRefetch={handleRefetch}
         onSelectN={handleSelectN}
+        filterBy={filterBy}
+        count={count}
         onFilter={setFilterText}
-        setSelectedCreatorIds={setSelectedCreatorIds}
         filteredVaults={filteredVaults}
+        selectedCreatorIds={selectedCreatorIds}
+        onFilterBy={(stats) => setFilterBy(stats)}
       />
+      <VaultsSSE updateCreatorsByAdminQuery={updateQuery}/>
 
       {filteredVaults && filteredVaults.length ? (
         <div className="relative h-full">
@@ -189,7 +136,7 @@ export const Vaults = () => {
         </div>
       ) : (
         <Div className="text-center">
-          <p>Looks like there is nothing here</p>
+          <p>✨Looks like there is nothing here✨</p>
         </Div>
       )}
 

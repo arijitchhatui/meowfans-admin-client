@@ -14,16 +14,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/useMobile';
-import { EventTypes } from '@/lib/constants';
 import { GET_ALL_OBJECTS_COUNT_OF_EACH_TYPE, GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY } from '@/packages/gql/api/vaultsAPI';
-import { DownloadStates, ExtendedUsersEntity, GetCountOfObjectsOfEachTypeQuery } from '@/packages/gql/generated/graphql';
-import { configService } from '@/util/config';
-import { buildSafeUrl } from '@/util/helpers';
+import { DownloadStates, ExtendedUsersEntity } from '@/packages/gql/generated/graphql';
 import { useLazyQuery, useQuery } from '@apollo/client/react';
 import { Ban, CheckLine, Download, ExternalLink, Funnel, ListTodo, LoaderIcon, RefreshCcw } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { VaultsSSE } from './VaultsSSE';
 
 const statusLabels: Record<DownloadStates, string> = {
   [DownloadStates.Fulfilled]: 'Total downloaded objects',
@@ -94,9 +92,7 @@ export const VaultsHeader: React.FC<Props> = ({
       toast.loading('Fetching latest count...');
       const { data } = await getCountOfObjects({ variables: { input: { status } } });
       toast.dismiss();
-      toast.success(data?.getTotalObjectsAsType, {
-        description: statusLabels[status]
-      });
+      toast.success(data?.getTotalObjectsAsType, { description: statusLabels[status] });
       return data?.getTotalObjectsAsType;
     } catch {
       toast.dismiss();
@@ -107,51 +103,6 @@ export const VaultsHeader: React.FC<Props> = ({
   useEffect(() => {
     onFilter(filterText);
   }, [filterText]); // eslint-disable-line
-
-  useEffect(() => {
-    const es = new EventSource(buildSafeUrl({ host: configService.NEXT_PUBLIC_API_URL, pathname: '/sse/stream' }));
-
-    es.addEventListener(EventTypes.VaultDownload, (event) => {
-      const { data } = JSON.parse(event.data);
-      updateAllObjectsCount((prev) => {
-        return {
-          ...prev,
-          getCountOfObjectsOfEachType: {
-            ...prev.getCountOfObjectsOfEachType,
-            fulfilled:
-              data.status === 'FULFILLED'
-                ? (prev.getCountOfObjectsOfEachType?.fulfilled || 0) + 1
-                : prev.getCountOfObjectsOfEachType?.fulfilled,
-            rejected:
-              data.status === 'REJECTED'
-                ? (prev.getCountOfObjectsOfEachType?.rejected || 0) + 1
-                : prev.getCountOfObjectsOfEachType?.rejected,
-            pending: Math.max((prev.getCountOfObjectsOfEachType?.pending ?? 0) - 1, 0),
-            processing:
-              data.status === 'PROCESSING'
-                ? (prev.getCountOfObjectsOfEachType?.processing || 0) + 1
-                : Math.max((prev.getCountOfObjectsOfEachType?.processing ?? 0) - 1, 0)
-          }
-        } as GetCountOfObjectsOfEachTypeQuery;
-      });
-    });
-
-    es.addEventListener(EventTypes.ImportObject, (event) => {
-      const { data } = JSON.parse(event.data);
-      updateAllObjectsCount((prev) => {
-        return {
-          ...prev,
-          getCountOfObjectsOfEachType: {
-            ...prev.getCountOfObjectsOfEachType,
-            pending:
-              data.status === 'PENDING'
-                ? Math.max((prev.getCountOfObjectsOfEachType?.pending ?? 0) + 1, 0)
-                : prev.getCountOfObjectsOfEachType?.pending
-          }
-        } as GetCountOfObjectsOfEachTypeQuery;
-      });
-    });
-  }, []); //eslint-disable-line
 
   return (
     <div className="flex flex-col space-y-2 sticky top-15 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md p-2 rounded-md">
@@ -225,6 +176,7 @@ export const VaultsHeader: React.FC<Props> = ({
           />
         </div>
       </div>
+      <VaultsSSE updateAllObjectsCount={updateAllObjectsCount} />
       <DownloadVaultsAsBatchModal
         creatorIds={selectedCreatorIds}
         isOpen={downloadVaultsAsBatchModal}

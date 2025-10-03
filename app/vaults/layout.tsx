@@ -1,4 +1,5 @@
 'use client';
+import { EventsContextWrapper } from '@/hooks/api/EventsContextWrapper';
 import { ExtendedUsersContextWrapper } from '@/hooks/context/ExtendedUsersContext';
 
 interface Props {
@@ -6,5 +7,9 @@ interface Props {
 }
 
 export default function VaultsLayout({ children }: Props) {
-  return <ExtendedUsersContextWrapper>{children}</ExtendedUsersContextWrapper>;
+  return (
+    <ExtendedUsersContextWrapper>
+      <EventsContextWrapper>{children}</EventsContextWrapper>
+    </ExtendedUsersContextWrapper>
+  );
 }
