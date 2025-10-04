@@ -34,12 +34,10 @@ export const VaultsSSE: React.FC<Props> = ({ updateAllObjectsCount, updateCreato
               c && c.id === creatorId
                 ? {
                     ...c,
-                    fulfilledObjectCount: data.status === 'FULFILLED' ? (c.fulfilledObjectCount ?? 0) + 1 : c.fulfilledObjectCount,
-                    rejectedObjectCount: data.status === 'REJECTED' ? (c.rejectedObjectCount ?? 0) + 1 : c.rejectedObjectCount,
-                    pendingObjectCount:
-                      data.status === 'PENDING' ? (c.pendingObjectCount || 0) + 1 : Math.max((c.pendingObjectCount || 0) - 1, 0),
-                    processingObjectCount:
-                      data.status === 'PROCESSING' ? (c.processingObjectCount || 0) + 1 : Math.max((c.processingObjectCount || 0) - 1, 0)
+                    fulfilledObjectCount: data.fulfilled,
+                    rejectedObjectCount: data.rejected,
+                    pendingObjectCount: data.pending,
+                    processingObjectCount: data.processing
                   }
                 : c
             ),
@@ -74,39 +72,29 @@ export const VaultsSSE: React.FC<Props> = ({ updateAllObjectsCount, updateCreato
         ...prev,
         getCountOfObjectsOfEachType: {
           ...prev.getCountOfObjectsOfEachType,
-          fulfilled:
-            data.status === 'FULFILLED'
-              ? (prev.getCountOfObjectsOfEachType?.fulfilled || 0) + 1
-              : prev.getCountOfObjectsOfEachType?.fulfilled,
-          rejected:
-            data.status === 'REJECTED' ? (prev.getCountOfObjectsOfEachType?.rejected || 0) + 1 : prev.getCountOfObjectsOfEachType?.rejected,
-          pending:
-            data.status === 'PENDING'
-              ? Math.max((prev.getCountOfObjectsOfEachType?.pending ?? 0) + 1, 0)
-              : prev.getCountOfObjectsOfEachType?.pending,
-          processing:
-            data.status === 'PROCESSING'
-              ? (prev.getCountOfObjectsOfEachType?.processing || 0) + 1
-              : Math.max((prev.getCountOfObjectsOfEachType?.processing ?? 0) - 1, 0)
+          fulfilled: data.fulfilled,
+          rejected: data.rejected,
+          pending: data.pending,
+          processing: data.processing
         }
       } as GetCountOfObjectsOfEachTypeQuery;
     });
   };
 
   useEffect(() => {
-    // eventEmitter.addEventListener(EventTypes.VaultDownload, (event) => onUpdateCreatorsByAdminQuery(event as any));
-    // eventEmitter.addEventListener(EventTypes.VaultDownloadCompleted, (event) => onVaultDownloadCompleted(event as any));
-    // eventEmitter.addEventListener(EventTypes.VaultDownload, (event) => onImportObjectOrVaultDownload(event as any));
-    // eventEmitter.addEventListener(EventTypes.ImportObject, (event) => onImportObjectOrVaultDownload(event as any));
-    // eventEmitter.addEventListener(EventTypes.ImportCompleted, (event) => onImportCompleted(event as any));
+    eventEmitter.addEventListener(EventTypes.VaultDownload, (event) => onUpdateCreatorsByAdminQuery(event as any));
+    eventEmitter.addEventListener(EventTypes.VaultDownloadCompleted, (event) => onVaultDownloadCompleted(event as any));
+    eventEmitter.addEventListener(EventTypes.VaultDownload, (event) => onImportObjectOrVaultDownload(event as any));
+    eventEmitter.addEventListener(EventTypes.ImportObject, (event) => onImportObjectOrVaultDownload(event as any));
+    eventEmitter.addEventListener(EventTypes.ImportCompleted, (event) => onImportCompleted(event as any));
 
-    // return () => {
-    //   eventEmitter.removeEventListener(EventTypes.VaultDownload, (event) => onUpdateCreatorsByAdminQuery(event as any));
-    //   eventEmitter.removeEventListener(EventTypes.VaultDownloadCompleted, (event) => onVaultDownloadCompleted(event as any));
-    //   eventEmitter.removeEventListener(EventTypes.VaultDownload, (event) => onImportObjectOrVaultDownload(event as any));
-    //   eventEmitter.removeEventListener(EventTypes.ImportObject, (event) => onImportObjectOrVaultDownload(event as any));
-    //   eventEmitter.removeEventListener(EventTypes.ImportCompleted, (event) => onImportCompleted(event as any));
-    // };
+    return () => {
+      eventEmitter.removeEventListener(EventTypes.VaultDownload, (event) => onUpdateCreatorsByAdminQuery(event as any));
+      eventEmitter.removeEventListener(EventTypes.VaultDownloadCompleted, (event) => onVaultDownloadCompleted(event as any));
+      eventEmitter.removeEventListener(EventTypes.VaultDownload, (event) => onImportObjectOrVaultDownload(event as any));
+      eventEmitter.removeEventListener(EventTypes.ImportObject, (event) => onImportObjectOrVaultDownload(event as any));
+      eventEmitter.removeEventListener(EventTypes.ImportCompleted, (event) => onImportCompleted(event as any));
+    };
   }, []); //eslint-disable-line
   return null;
 };
