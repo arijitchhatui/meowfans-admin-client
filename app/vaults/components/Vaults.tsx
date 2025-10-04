@@ -16,7 +16,6 @@ import { useQuery } from '@apollo/client/react';
 import { useSearchParams } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { VaultsHeader } from './VaultsHeader';
-import { VaultsSSE } from './VaultsSSE';
 import { VaultUrls } from './VaultUrls';
 
 export const Vaults = () => {
@@ -88,7 +87,6 @@ export const Vaults = () => {
         selectedCreatorIds={selectedCreatorIds}
         onFilterBy={(stats) => setFilterBy(stats)}
       />
-      <VaultsSSE updateCreatorsByAdminQuery={updateQuery} />
       {filteredVaults && filteredVaults.length ? (
         <div className="relative h-full">
           <ScrollArea className="h-[calc(100vh-140px)] w-full p-1">

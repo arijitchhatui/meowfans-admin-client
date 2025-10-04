@@ -25,7 +25,7 @@ import {
 import { HostNames } from '@/lib/constants';
 import { INITIATE_CREATOR_OBJECTS_IMPORT_MUTATION } from '@/packages/gql/api/importAPI';
 import { GET_USER_QUERY } from '@/packages/gql/api/userAPI';
-import { DocumentQualityType, FileType, GetUserQuery, ImportTypes } from '@/packages/gql/generated/graphql';
+import { DocumentQualityType, FileType, GetUserQuery, ImportTypes, ServiceType } from '@/packages/gql/generated/graphql';
 import { useLazyQuery, useMutation } from '@apollo/client/react';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -64,6 +64,7 @@ export const ImportSingleCreatorSheet = () => {
       await initiateImport({
         variables: {
           input: {
+            serviceType: ServiceType.Dos,
             creatorId: creator?.getUser.id,
             url: url.trim(),
             fileType,

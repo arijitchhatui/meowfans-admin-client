@@ -21,7 +21,6 @@ import { Ban, CheckLine, Download, ExternalLink, Funnel, ListTodo, LoaderIcon, R
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { VaultsSSE } from './VaultsSSE';
 
 const statusLabels: Record<DownloadStates, string> = {
   [DownloadStates.Fulfilled]: 'Total downloaded objects',
@@ -76,7 +75,6 @@ export const VaultsHeader: React.FC<Props> = ({
   selectedCreatorIds,
   setSelectedCreatorIds,
   onFilter,
-  filteredVaults,
   filterBy,
   onFilterBy
 }) => {
@@ -182,7 +180,6 @@ export const VaultsHeader: React.FC<Props> = ({
           />
         </div>
       </div>
-      <VaultsSSE updateAllObjectsCount={updateAllObjectsCount} />
       <DownloadVaultsAsBatchModal
         creatorIds={selectedCreatorIds}
         isOpen={downloadVaultsAsBatchModal}

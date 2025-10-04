@@ -101,6 +101,7 @@ export const ImportCreatorsSheet = () => {
     setIsNewCreator(false);
     setExceptions([]);
     setIsOpen((prev) => !prev);
+    setServiceType(ServiceType.Dos);
   };
 
   useEffect(() => {
