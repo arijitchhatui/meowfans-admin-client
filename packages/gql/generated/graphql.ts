@@ -26,7 +26,7 @@ export enum AssetType {
 
 export type AssetsEntity = {
   __typename?: 'AssetsEntity';
-  blurredUrl: Scalars['String']['output'];
+  blurredUrl?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   creatorAssets: Array<CreatorAssetsEntity>;
   creatorId: Scalars['String']['output'];
@@ -75,6 +75,7 @@ export type CreateImportQueueInput = {
   importType?: ImportTypes;
   isNewCreator?: Scalars['Boolean']['input'];
   qualityType?: DocumentQualityType;
+  serviceType?: ServiceType;
   start?: Scalars['Int']['input'];
   subDirectory: Scalars['String']['input'];
   totalContent?: Scalars['Int']['input'];
@@ -1164,6 +1165,11 @@ export type SendReactionInput = {
   reaction: Scalars['String']['input'];
 };
 
+export enum ServiceType {
+  Dos = 'DOS',
+  Ras = 'RAS'
+}
+
 export type SocialAccountsEntity = {
   __typename?: 'SocialAccountsEntity';
   createdAt: Scalars['DateTime']['output'];
@@ -1316,6 +1322,7 @@ export type VaultObjectsEntity = {
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   fileType: FileType;
   id: Scalars['String']['output'];
+  importedAt?: Maybe<Scalars['DateTime']['output']>;
   objectUrl: Scalars['String']['output'];
   status: DownloadStates;
   suffix: Scalars['Float']['output'];
@@ -1340,7 +1347,7 @@ export type GetAllAssetsByAdminQueryVariables = Exact<{
 }>;
 
 
-export type GetAllAssetsByAdminQuery = { __typename?: 'Query', getAllAssetsByAdmin: { __typename?: 'GetAllAssetsOutput', count: number, assets: Array<{ __typename?: 'CreatorAssetsEntity', assetId: string, createdAt: any, creatorId: string, deletedAt?: any | null, id: string, type: AssetType, asset: { __typename?: 'AssetsEntity', blurredUrl: string, createdAt: any, fileType: FileType, id: string, mediaType: MediaType, mimeType: string, rawUrl: string, updatedAt: any }, creatorProfile: { __typename?: 'CreatorProfilesEntity', createdAt: any, creatorId: string, verified: boolean, user: { __typename?: 'UsersEntity', avatarUrl?: string | null, id: string, lastLoginAt?: any | null, roles: Array<UserRoles>, username: string } } }> } };
+export type GetAllAssetsByAdminQuery = { __typename?: 'Query', getAllAssetsByAdmin: { __typename?: 'GetAllAssetsOutput', count: number, assets: Array<{ __typename?: 'CreatorAssetsEntity', assetId: string, createdAt: any, creatorId: string, deletedAt?: any | null, id: string, type: AssetType, asset: { __typename?: 'AssetsEntity', blurredUrl?: string | null, createdAt: any, fileType: FileType, id: string, mediaType: MediaType, mimeType: string, rawUrl: string, updatedAt: any }, creatorProfile: { __typename?: 'CreatorProfilesEntity', createdAt: any, creatorId: string, verified: boolean, user: { __typename?: 'UsersEntity', avatarUrl?: string | null, id: string, lastLoginAt?: any | null, roles: Array<UserRoles>, username: string } } }> } };
 
 export type GetCreatorsByAdminQueryVariables = Exact<{
   input: PaginationInput;
@@ -1361,7 +1368,7 @@ export type GetCreatorAssetsByAdminQueryVariables = Exact<{
 }>;
 
 
-export type GetCreatorAssetsByAdminQuery = { __typename?: 'Query', getCreatorAssetsByAdmin: Array<{ __typename?: 'CreatorAssetsEntity', assetId: string, createdAt: any, creatorId: string, deletedAt?: any | null, id: string, type: AssetType, asset: { __typename?: 'AssetsEntity', blurredUrl: string, createdAt: any, creatorId: string, fileType: FileType, id: string, mediaType: MediaType, mimeType: string, rawUrl: string, updatedAt: any }, creatorProfile: { __typename?: 'CreatorProfilesEntity', creatorId: string, bio?: string | null, displayOnlineStatus: boolean, user: { __typename?: 'UsersEntity', avatarUrl?: string | null, id: string, username: string } } }> };
+export type GetCreatorAssetsByAdminQuery = { __typename?: 'Query', getCreatorAssetsByAdmin: Array<{ __typename?: 'CreatorAssetsEntity', assetId: string, createdAt: any, creatorId: string, deletedAt?: any | null, id: string, type: AssetType, asset: { __typename?: 'AssetsEntity', blurredUrl?: string | null, createdAt: any, creatorId: string, fileType: FileType, id: string, mediaType: MediaType, mimeType: string, rawUrl: string, updatedAt: any }, creatorProfile: { __typename?: 'CreatorProfilesEntity', creatorId: string, bio?: string | null, displayOnlineStatus: boolean, user: { __typename?: 'UsersEntity', avatarUrl?: string | null, id: string, username: string } } }> };
 
 export type GetCreatorVaultObjectsByAdminQueryVariables = Exact<{
   input: PaginationInput;
@@ -1387,7 +1394,7 @@ export type GetCreatorAssetsQueryVariables = Exact<{
 }>;
 
 
-export type GetCreatorAssetsQuery = { __typename?: 'Query', getCreatorAssets: Array<{ __typename?: 'CreatorAssetsEntity', assetId: string, createdAt: any, creatorId: string, deletedAt?: any | null, id: string, type: AssetType, asset: { __typename?: 'AssetsEntity', blurredUrl: string, createdAt: any, creatorId: string, fileType: FileType, id: string, mediaType: MediaType, mimeType: string, rawUrl: string, updatedAt: any } }> };
+export type GetCreatorAssetsQuery = { __typename?: 'Query', getCreatorAssets: Array<{ __typename?: 'CreatorAssetsEntity', assetId: string, createdAt: any, creatorId: string, deletedAt?: any | null, id: string, type: AssetType, asset: { __typename?: 'AssetsEntity', blurredUrl?: string | null, createdAt: any, creatorId: string, fileType: FileType, id: string, mediaType: MediaType, mimeType: string, rawUrl: string, updatedAt: any } }> };
 
 export type DeleteCreatorAssetsMutationVariables = Exact<{
   input: DeleteCreatorAsset;
@@ -1406,7 +1413,7 @@ export type UpdateAssetsMutationVariables = Exact<{
 }>;
 
 
-export type UpdateAssetsMutation = { __typename?: 'Mutation', updateAssets: Array<{ __typename?: 'CreatorAssetsEntity', assetId: string, createdAt: any, creatorId: string, deletedAt?: any | null, id: string, type: AssetType, asset: { __typename?: 'AssetsEntity', blurredUrl: string, createdAt: any, creatorId: string, fileType: FileType, id: string, mediaType: MediaType, mimeType: string, rawUrl: string, updatedAt: any } }> };
+export type UpdateAssetsMutation = { __typename?: 'Mutation', updateAssets: Array<{ __typename?: 'CreatorAssetsEntity', assetId: string, createdAt: any, creatorId: string, deletedAt?: any | null, id: string, type: AssetType, asset: { __typename?: 'AssetsEntity', blurredUrl?: string | null, createdAt: any, creatorId: string, fileType: FileType, id: string, mediaType: MediaType, mimeType: string, rawUrl: string, updatedAt: any } }> };
 
 export type CreateChannelMutationVariables = Exact<{
   input: CreateChannelInput;

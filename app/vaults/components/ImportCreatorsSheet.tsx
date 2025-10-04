@@ -26,7 +26,7 @@ import { Switch } from '@/components/ui/switch';
 import { CreatorContext } from '@/hooks/context/CreatorContextWrapper';
 import { HostNames } from '@/lib/constants';
 import { INITIATE_CREATORS_IMPORT_QUERY_MUTATION } from '@/packages/gql/api/importAPI';
-import { DocumentQualityType, FileType, ImportTypes } from '@/packages/gql/generated/graphql';
+import { DocumentQualityType, FileType, ImportTypes, ServiceType } from '@/packages/gql/generated/graphql';
 import { useMutation } from '@apollo/client/react';
 import { useContext, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -45,6 +45,7 @@ export const ImportCreatorsSheet = () => {
   const [exceptionInput, setExceptionInput] = useState<string>('');
   const [fileType, setFileType] = useState<FileType>(FileType.Image);
   const [hasEditedSubDir, setHasEditedSubDir] = useState<boolean>(false);
+  const [serviceType, setServiceType] = useState<ServiceType>(ServiceType.Dos);
   const [importType, setImportType] = useState<ImportTypes>(ImportTypes.Page);
   const [initiateImport] = useMutation(INITIATE_CREATORS_IMPORT_QUERY_MUTATION);
   const [qualityType, setQualityType] = useState<DocumentQualityType>(DocumentQualityType.HighDefinition);
@@ -55,6 +56,7 @@ export const ImportCreatorsSheet = () => {
       await initiateImport({
         variables: {
           input: {
+            serviceType,
             creatorId: user.getCreatorProfile.creatorId,
             url: url.trim(),
             fileType,
@@ -145,6 +147,22 @@ export const ImportCreatorsSheet = () => {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
             />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="file-type">SERVICE TYPE</Label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">{serviceType}</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-36">
+                <DropdownMenuLabel>File types</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup value={serviceType} onValueChange={(val) => setServiceType(val as ServiceType)}>
+                  <DropdownMenuRadioItem value={ServiceType.Dos}>DIGITAL OCEAN</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value={ServiceType.Ras}>RAILWAY</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <div className="flex flex-row gap-3 space-y-1">
             <div className="grid gap-2">
