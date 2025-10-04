@@ -45,6 +45,7 @@ export const ImportSingleCreatorSheet = () => {
   const [subDirectory, setSubDirectory] = useState<string>('');
   const [exceptionInput, setExceptionInput] = useState<string>('');
   const [fileType, setFileType] = useState<FileType>(FileType.Image);
+  const [serviceType, setServiceType] = useState<ServiceType>(ServiceType.Ras);
   const [hasEditedSubDir, setHasEditedSubDir] = useState<boolean>(false);
   const [importType, setImportType] = useState<ImportTypes>(ImportTypes.Profile);
   const [initiateImport] = useMutation(INITIATE_CREATOR_OBJECTS_IMPORT_MUTATION);
@@ -64,7 +65,7 @@ export const ImportSingleCreatorSheet = () => {
       await initiateImport({
         variables: {
           input: {
-            serviceType: ServiceType.Dos,
+            serviceType,
             creatorId: creator?.getUser.id,
             url: url.trim(),
             fileType,
@@ -106,6 +107,7 @@ export const ImportSingleCreatorSheet = () => {
     setExclude(0);
     setExceptions([]);
     setIsOpen((prev) => !prev);
+    setServiceType(ServiceType.Ras);
   };
 
   useEffect(() => {
@@ -152,6 +154,22 @@ export const ImportSingleCreatorSheet = () => {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
             />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="file-type">SERVICE TYPE</Label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">{serviceType}</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-36">
+                <DropdownMenuLabel>File types</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup value={serviceType} onValueChange={(val) => setServiceType(val as ServiceType)}>
+                  <DropdownMenuRadioItem value={ServiceType.Dos}>DIGITAL OCEAN</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value={ServiceType.Ras}>RAILWAY</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="grid gap-2">

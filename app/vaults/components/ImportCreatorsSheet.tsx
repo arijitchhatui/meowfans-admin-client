@@ -45,7 +45,7 @@ export const ImportCreatorsSheet = () => {
   const [exceptionInput, setExceptionInput] = useState<string>('');
   const [fileType, setFileType] = useState<FileType>(FileType.Image);
   const [hasEditedSubDir, setHasEditedSubDir] = useState<boolean>(false);
-  const [serviceType, setServiceType] = useState<ServiceType>(ServiceType.Dos);
+  const [serviceType, setServiceType] = useState<ServiceType>(ServiceType.Ras);
   const [importType, setImportType] = useState<ImportTypes>(ImportTypes.Page);
   const [initiateImport] = useMutation(INITIATE_CREATORS_IMPORT_QUERY_MUTATION);
   const [qualityType, setQualityType] = useState<DocumentQualityType>(DocumentQualityType.HighDefinition);
@@ -101,7 +101,7 @@ export const ImportCreatorsSheet = () => {
     setIsNewCreator(false);
     setExceptions([]);
     setIsOpen((prev) => !prev);
-    setServiceType(ServiceType.Dos);
+    setServiceType(ServiceType.Ras);
   };
 
   useEffect(() => {
