@@ -55,7 +55,7 @@ export const CreatorAssets: React.FC<Props> = ({ data: creatorData }) => {
           limit: 50,
           assetType: assetType,
           orderBy: SortOrder.Asc,
-          relatedUserId: creatorData?.getUser.id
+          relatedUserId: creatorData?.getUser.username
         }
       },
       updateQuery: (prev, { fetchMoreResult }) => {
