@@ -39,7 +39,7 @@ export const ImportCreatorsSheet = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [exceptions, setExceptions] = useState<string[]>([]);
-  const [totalContent, setTotalContent] = useState<number>(0);
+  const [totalContent, setTotalContent] = useState<number>(10);
   const [subDirectory, setSubDirectory] = useState<string>('');
   const [isNewCreator, setIsNewCreator] = useState<boolean>(false);
   const [exceptionInput, setExceptionInput] = useState<string>('');
