@@ -852,7 +852,7 @@ export type PaginationInput = {
   pageNumber?: Scalars['Int']['input'];
   postTypes?: InputMaybe<Array<PostTypes>>;
   relatedEntityId?: InputMaybe<Scalars['ID']['input']>;
-  relatedUserId?: InputMaybe<Scalars['ID']['input']>;
+  relatedUserId?: InputMaybe<Scalars['String']['input']>;
   role?: InputMaybe<UserRoles>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   status?: DownloadStates;
