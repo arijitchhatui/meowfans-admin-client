@@ -92,7 +92,7 @@ export const ImportCreatorsSheet = () => {
     setUrl('');
     setFileType(FileType.Image);
     setQualityType(DocumentQualityType.HighDefinition);
-    setTotalContent(0);
+    setTotalContent(10);
     setSubDirectory('');
     setImportType(ImportTypes.Page);
     setHasEditedSubDir(false);
@@ -149,21 +149,34 @@ export const ImportCreatorsSheet = () => {
               onChange={(e) => setUrl(e.target.value)}
             />
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="file-type">SERVICE TYPE</Label>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">{serviceType}</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-36">
-                <DropdownMenuLabel>File types</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuRadioGroup value={serviceType} onValueChange={(val) => setServiceType(val as ServiceType)}>
-                  <DropdownMenuRadioItem value={ServiceType.Dos}>DIGITAL OCEAN</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value={ServiceType.Ras}>RAILWAY</DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="flex flex-row justify-between">
+            <div className="grid gap-2">
+              <Label htmlFor="file-type">SERVICE TYPE</Label>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">{serviceType}</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>File types</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuRadioGroup value={serviceType} onValueChange={(val) => setServiceType(val as ServiceType)}>
+                    <DropdownMenuRadioItem value={ServiceType.Dos}>DIGITAL OCEAN</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value={ServiceType.Ras}>RAILWAY</DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="exclude">Content interval</Label>
+              <Input
+                id="exclude"
+                type="text"
+                placeholder="0"
+                required
+                value={totalContent}
+                onChange={(e) => setTotalContent(Number(e.target.value.replace(/[^0-9]/g, '')))}
+              />
+            </div>
           </div>
           <div className="flex flex-row gap-3 space-y-1">
             <div className="grid gap-2">
