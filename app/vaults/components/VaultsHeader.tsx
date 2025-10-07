@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/useMobile';
+import { statusLabels } from '@/lib/constants';
 import { GET_ALL_OBJECTS_COUNT_OF_EACH_TYPE, GET_TOTAL_VAULT_OBJECTS_COUNT_BY_TYPE_QUERY } from '@/packages/gql/api/vaultsAPI';
 import { DownloadStates, ExtendedUsersEntity } from '@/packages/gql/generated/graphql';
 import { useLazyQuery, useQuery } from '@apollo/client/react';
@@ -22,14 +23,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-const statusLabels: Record<DownloadStates, string> = {
-  [DownloadStates.Fulfilled]: 'Total downloaded objects',
-  [DownloadStates.Pending]: 'Total pending objects',
-  [DownloadStates.Processing]: 'Total processing objects',
-  [DownloadStates.Rejected]: 'Total rejected objects'
-};
-
-const statusButtons = [
+export const statusButtons = [
   {
     className: 'text-xs font-medium bg-blue-500 text-white',
     label: 'fulfilled',

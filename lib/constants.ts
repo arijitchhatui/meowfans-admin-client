@@ -1,4 +1,21 @@
-import { AudioWaveform, Blocks, Calendar, ChartLine, CircleDollarSign, CircleUserRound, Command, GalleryVerticalEnd, Home, Inbox, LucideIcon, Mails, MessageCircleOff, Settings, Settings2, Trash2 } from 'lucide-react';
+import { DownloadStates } from '@/packages/gql/generated/graphql';
+import {
+  AudioWaveform,
+  Blocks,
+  Calendar,
+  ChartLine,
+  CircleDollarSign,
+  CircleUserRound,
+  Command,
+  GalleryVerticalEnd,
+  Home,
+  Inbox,
+  LucideIcon,
+  Mails,
+  MessageCircleOff,
+  Settings,
+  Settings2
+} from 'lucide-react';
 
 export const authenticatedPaths = [
   '/home',
@@ -21,6 +38,13 @@ export enum FetchMethods {
   PATCH = 'PATCH',
   GET = 'GET'
 }
+
+export const statusLabels: Record<DownloadStates, string> = {
+  [DownloadStates.Fulfilled]: 'Total downloaded objects',
+  [DownloadStates.Pending]: 'Total pending objects',
+  [DownloadStates.Processing]: 'Total processing objects',
+  [DownloadStates.Rejected]: 'Total rejected objects'
+};
 
 export interface JwtUser {
   sub: string; // holds userId
@@ -114,7 +138,7 @@ export const appSideBarButtonOptions = {
   navMain: [
     { title: 'Vaults', url: '/vaults', icon: Home },
     { title: 'Profiles', url: '/profiles', icon: CircleUserRound },
-    { title: 'Assets', url: '/assets', icon: GalleryVerticalEnd, },
+    { title: 'Assets', url: '/assets', icon: GalleryVerticalEnd },
     { title: 'Analytics', url: '/analytics', icon: ChartLine, badge: '10' },
     { title: 'Messages', url: '/channels', icon: Mails, badge: '10' }
   ],

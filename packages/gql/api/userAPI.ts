@@ -20,6 +20,10 @@ export const GET_USER_QUERY = graphql(`
       roles
       updatedAt
       username
+      fulfilledCount
+      processingCount
+      pendingCount
+      rejectedCount
     }
   }
 `);
