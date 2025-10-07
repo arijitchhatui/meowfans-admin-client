@@ -45,27 +45,35 @@ export const CreatorVaultsHeader: React.FC<Props> = ({
   return (
     <Div className="flex items-center justify-between content-center space-x-1 sticky top-15 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md p-2 rounded-md">
       <Div className="flex flex-col space-y-2 items-center">
-        <Div className="flex flex-row space-x-2 items-center">
+        <div className="flex flex-row space-x-2 items-center">
           <Button size="sm">{dataLength}</Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Funnel />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel>Types</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuRadioGroup value={status} onValueChange={(val) => onSetStatus(val as DownloadStates)}>
-                <DropdownMenuRadioItem value={DownloadStates.Fulfilled}>Fulfilled</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value={DownloadStates.Pending}>Pending</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value={DownloadStates.Processing}>Processing</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value={DownloadStates.Rejected}>Rejected</DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </Div>
-        <Badge className="text-xs">{creatorData?.getUser.username}</Badge>
+          <div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Funnel />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Types</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup value={status} onValueChange={(val) => onSetStatus(val as DownloadStates)}>
+                  <DropdownMenuRadioItem value={DownloadStates.Fulfilled}>Fulfilled</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value={DownloadStates.Pending}>Pending</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value={DownloadStates.Processing}>Processing</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value={DownloadStates.Rejected}>Rejected</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <Badge className="text-xs">{creatorData?.getUser.username}</Badge>
+        </div>
+        <div className="flex flex-row space-x-1">
+          <Button size="sm" className=''>{creatorData.getUser.pendingCount}</Button>
+          <Button size="sm" className='bg-orange-500'>{creatorData.getUser.processingCount}</Button>
+          <Button size="sm" className='bg-red-500'>{creatorData.getUser.rejectedCount}</Button>
+          <Button size="sm" className='bg-blue-500'>{creatorData.getUser.fulfilledCount}</Button>
+        </div>
       </Div>
 
       <Div className="flex flex-row space-x-2 items-center">
