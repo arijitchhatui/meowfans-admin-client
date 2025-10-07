@@ -423,6 +423,43 @@ export type GetCreatorVaultObjectsOutput = {
   vaultObjects: Array<VaultObjectsEntity>;
 };
 
+export type GetDefaultAssetsOutput = {
+  __typename?: 'GetDefaultAssetsOutput';
+  assets: Array<CreatorAssetsEntity>;
+  count: Scalars['Int']['output'];
+  hasNext: Scalars['Boolean']['output'];
+  hasPrev: Scalars['Boolean']['output'];
+  totalPages: Scalars['Int']['output'];
+};
+
+export type GetDefaultCreatorsOutput = {
+  __typename?: 'GetDefaultCreatorsOutput';
+  count: Scalars['Int']['output'];
+  creators: Array<UsersEntity>;
+  hasNext: Scalars['Boolean']['output'];
+  hasPrev: Scalars['Boolean']['output'];
+  totalPages: Scalars['Int']['output'];
+};
+
+export type GetDefaultVaultObjectsOutput = {
+  __typename?: 'GetDefaultVaultObjectsOutput';
+  count: Scalars['Int']['output'];
+  hasNext: Scalars['Boolean']['output'];
+  hasPrev: Scalars['Boolean']['output'];
+  totalPages: Scalars['Int']['output'];
+  vault: VaultsEntity;
+  vaultObjects: Array<VaultObjectsEntity>;
+};
+
+export type GetDefaultVaultsOutput = {
+  __typename?: 'GetDefaultVaultsOutput';
+  count: Scalars['Int']['output'];
+  hasNext: Scalars['Boolean']['output'];
+  hasPrev: Scalars['Boolean']['output'];
+  totalPages: Scalars['Int']['output'];
+  vaults: Array<VaultsEntity>;
+};
+
 export type GetPostsInfoOutput = {
   __typename?: 'GetPostsInfoOutput';
   caption?: Maybe<Scalars['String']['output']>;
@@ -641,6 +678,7 @@ export type Mutation = {
   updateFanProfile: FanProfilesEntity;
   updateMessage: MessagesEntity;
   updatePost: PostsEntity;
+  updatePreviewOfVaults: Scalars['String']['output'];
   uploadVault: Scalars['String']['output'];
 };
 
@@ -1006,8 +1044,11 @@ export type Query = {
   getCreatorProfileByAdmin: CreatorProfilesEntity;
   getCreatorVaultObjects: Array<VaultObjectsEntity>;
   getCreatorVaultObjectsByAdmin: GetCreatorVaultObjectsOutput;
-  getCreatorVaults: Array<VaultsEntity>;
   getCreatorsByAdmin: GetAllCreatorsOutput;
+  getDefaultAssets: GetDefaultAssetsOutput;
+  getDefaultCreatorAssets: Array<CreatorAssetsEntity>;
+  getDefaultCreators: GetDefaultCreatorsOutput;
+  getDefaultVaults: GetDefaultVaultsOutput;
   getFanProfile: FanProfilesEntity;
   getFollowers: Array<CreatorFollowsEntity>;
   getFollowing: Array<CreatorFollowsEntity>;
@@ -1018,6 +1059,7 @@ export type Query = {
   getRestrictedUsers: Array<CreatorRestrictsEntity>;
   getTotalObjectsAsType: Scalars['Int']['output'];
   getUser: UsersEntity;
+  getVaultObjectsByVaultId: GetDefaultVaultObjectsOutput;
 };
 
 
@@ -1081,12 +1123,27 @@ export type QueryGetCreatorVaultObjectsByAdminArgs = {
 };
 
 
-export type QueryGetCreatorVaultsArgs = {
+export type QueryGetCreatorsByAdminArgs = {
   input: PaginationInput;
 };
 
 
-export type QueryGetCreatorsByAdminArgs = {
+export type QueryGetDefaultAssetsArgs = {
+  input: PaginationInput;
+};
+
+
+export type QueryGetDefaultCreatorAssetsArgs = {
+  input: PaginationInput;
+};
+
+
+export type QueryGetDefaultCreatorsArgs = {
+  input: PaginationInput;
+};
+
+
+export type QueryGetDefaultVaultsArgs = {
   input: PaginationInput;
 };
 
@@ -1133,6 +1190,11 @@ export type QueryGetTotalObjectsAsTypeArgs = {
 
 export type QueryGetUserArgs = {
   username: Scalars['String']['input'];
+};
+
+
+export type QueryGetVaultObjectsByVaultIdArgs = {
+  input: PaginationInput;
 };
 
 export type RestrictFanInput = {
@@ -1317,6 +1379,7 @@ export type UsersEntity = {
 
 export type VaultObjectsEntity = {
   __typename?: 'VaultObjectsEntity';
+  asset?: Maybe<AssetsEntity>;
   contentType: ContentType;
   createdAt: Scalars['DateTime']['output'];
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1325,7 +1388,7 @@ export type VaultObjectsEntity = {
   importedAt?: Maybe<Scalars['DateTime']['output']>;
   objectUrl: Scalars['String']['output'];
   status: DownloadStates;
-  suffix: Scalars['Float']['output'];
+  suffix?: Maybe<Scalars['Float']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   vault: VaultsEntity;
   vaultId: Scalars['String']['output'];
@@ -1337,9 +1400,13 @@ export type VaultsEntity = {
   creatorId: Scalars['String']['output'];
   creatorProfile: CreatorProfilesEntity;
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
+  keywords?: Maybe<Array<Scalars['String']['output']>>;
+  preview: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   url: Scalars['String']['output'];
+  vaultObjects: Array<VaultObjectsEntity>;
 };
 
 export type GetAllAssetsByAdminQueryVariables = Exact<{
@@ -1368,7 +1435,7 @@ export type GetCreatorAssetsByAdminQueryVariables = Exact<{
 }>;
 
 
-export type GetCreatorAssetsByAdminQuery = { __typename?: 'Query', getCreatorAssetsByAdmin: Array<{ __typename?: 'CreatorAssetsEntity', assetId: string, createdAt: any, creatorId: string, deletedAt?: any | null, id: string, type: AssetType, asset: { __typename?: 'AssetsEntity', blurredUrl?: string | null, createdAt: any, creatorId: string, fileType: FileType, id: string, mediaType: MediaType, mimeType: string, rawUrl: string, updatedAt: any }, creatorProfile: { __typename?: 'CreatorProfilesEntity', creatorId: string, bio?: string | null, displayOnlineStatus: boolean, user: { __typename?: 'UsersEntity', avatarUrl?: string | null, id: string, username: string } } }> };
+export type GetCreatorAssetsByAdminQuery = { __typename?: 'Query', getCreatorAssetsByAdmin: Array<{ __typename?: 'CreatorAssetsEntity', assetId: string, createdAt: any, creatorId: string, deletedAt?: any | null, id: string, type: AssetType, asset: { __typename?: 'AssetsEntity', blurredUrl?: string | null, createdAt: any, creatorId: string, fileType: FileType, id: string, mediaType: MediaType, mimeType: string, rawUrl: string, updatedAt: any, vaultObject?: { __typename?: 'VaultObjectsEntity', contentType: ContentType, fileType: FileType, id: string, status: DownloadStates, vault: { __typename?: 'VaultsEntity', keywords?: Array<string> | null, description?: string | null, id: string } } | null }, creatorProfile: { __typename?: 'CreatorProfilesEntity', creatorId: string, bio?: string | null, displayOnlineStatus: boolean, user: { __typename?: 'UsersEntity', avatarUrl?: string | null, id: string, username: string } } }> };
 
 export type GetCreatorVaultObjectsByAdminQueryVariables = Exact<{
   input: PaginationInput;
@@ -1650,11 +1717,16 @@ export type GetCountOfObjectsOfEachTypeQueryVariables = Exact<{ [key: string]: n
 
 export type GetCountOfObjectsOfEachTypeQuery = { __typename?: 'Query', getCountOfObjectsOfEachType: { __typename?: 'GetAllObjectsCountOutput', fulfilled: number, pending: number, processing: number, rejected: number } };
 
+export type UpdatePreviewOfDefaultVaultsMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UpdatePreviewOfDefaultVaultsMutation = { __typename?: 'Mutation', updatePreviewOfVaults: string };
+
 
 export const GetAllAssetsByAdminDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllAssetsByAdmin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getAllAssetsByAdmin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"assets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"creatorId"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"asset"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blurredUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"mediaType"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"rawUrl"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"creatorProfile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"creatorId"}},{"kind":"Field","name":{"kind":"Name","value":"verified"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"lastLoginAt"}},{"kind":"Field","name":{"kind":"Name","value":"roles"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetAllAssetsByAdminQuery, GetAllAssetsByAdminQueryVariables>;
 export const GetCreatorsByAdminDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCreatorsByAdmin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCreatorsByAdmin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}},{"kind":"Field","name":{"kind":"Name","value":"hasNext"}},{"kind":"Field","name":{"kind":"Name","value":"hasPrev"}},{"kind":"Field","name":{"kind":"Name","value":"creators"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"bannerUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"lastLoginAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"roles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"vaultCount"}},{"kind":"Field","name":{"kind":"Name","value":"assetCount"}},{"kind":"Field","name":{"kind":"Name","value":"fulfilledObjectCount"}},{"kind":"Field","name":{"kind":"Name","value":"pendingObjectCount"}},{"kind":"Field","name":{"kind":"Name","value":"processingObjectCount"}},{"kind":"Field","name":{"kind":"Name","value":"rejectedObjectCount"}}]}}]}}]}}]} as unknown as DocumentNode<GetCreatorsByAdminQuery, GetCreatorsByAdminQueryVariables>;
 export const GetAllVaultsByAdminDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllVaultsByAdmin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getAllVaultsByAdmin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"vaults"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"objectUrl"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"vaultId"}}]}}]}}]}}]} as unknown as DocumentNode<GetAllVaultsByAdminQuery, GetAllVaultsByAdminQueryVariables>;
-export const GetCreatorAssetsByAdminDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCreatorAssetsByAdmin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCreatorAssetsByAdmin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"creatorId"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"asset"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blurredUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"creatorId"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"mediaType"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"rawUrl"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"creatorProfile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"creatorId"}},{"kind":"Field","name":{"kind":"Name","value":"bio"}},{"kind":"Field","name":{"kind":"Name","value":"displayOnlineStatus"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetCreatorAssetsByAdminQuery, GetCreatorAssetsByAdminQueryVariables>;
+export const GetCreatorAssetsByAdminDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCreatorAssetsByAdmin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCreatorAssetsByAdmin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"creatorId"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"asset"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blurredUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"creatorId"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"mediaType"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"rawUrl"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"vaultObject"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"vault"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"keywords"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"contentType"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"creatorProfile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"creatorId"}},{"kind":"Field","name":{"kind":"Name","value":"bio"}},{"kind":"Field","name":{"kind":"Name","value":"displayOnlineStatus"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetCreatorAssetsByAdminQuery, GetCreatorAssetsByAdminQueryVariables>;
 export const GetCreatorVaultObjectsByAdminDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCreatorVaultObjectsByAdmin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCreatorVaultObjectsByAdmin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"vaultObjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"objectUrl"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"vaultId"}},{"kind":"Field","name":{"kind":"Name","value":"vault"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"creatorId"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"creatorProfile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"creatorId"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetCreatorVaultObjectsByAdminQuery, GetCreatorVaultObjectsByAdminQueryVariables>;
 export const DownloadAllCreatorObjectsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DownloadAllCreatorObjects"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DownloadAllCreatorObjectsAsBatchInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"downloadAllCreatorObjects"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<DownloadAllCreatorObjectsMutation, DownloadAllCreatorObjectsMutationVariables>;
 export const TerminateDownloadingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TerminateDownloading"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"terminateDownloading"}}]}}]} as unknown as DocumentNode<TerminateDownloadingMutation, TerminateDownloadingMutationVariables>;
@@ -1697,3 +1769,4 @@ export const TerminateDocument = {"kind":"Document","definitions":[{"kind":"Oper
 export const GetTotalObjectsAsTypeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTotalObjectsAsType"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getTotalObjectsAsType"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<GetTotalObjectsAsTypeQuery, GetTotalObjectsAsTypeQueryVariables>;
 export const CleanUpVaultObjectsOfACreatorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CleanUpVaultObjectsOfACreator"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CleanUpVaultInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cleanUpVaultObjectsOfACreator"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<CleanUpVaultObjectsOfACreatorMutation, CleanUpVaultObjectsOfACreatorMutationVariables>;
 export const GetCountOfObjectsOfEachTypeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCountOfObjectsOfEachType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCountOfObjectsOfEachType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fulfilled"}},{"kind":"Field","name":{"kind":"Name","value":"pending"}},{"kind":"Field","name":{"kind":"Name","value":"processing"}},{"kind":"Field","name":{"kind":"Name","value":"rejected"}}]}}]}}]} as unknown as DocumentNode<GetCountOfObjectsOfEachTypeQuery, GetCountOfObjectsOfEachTypeQueryVariables>;
+export const UpdatePreviewOfDefaultVaultsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdatePreviewOfDefaultVaults"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePreviewOfVaults"}}]}}]} as unknown as DocumentNode<UpdatePreviewOfDefaultVaultsMutation, UpdatePreviewOfDefaultVaultsMutationVariables>;
