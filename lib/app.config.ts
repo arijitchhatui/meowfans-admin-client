@@ -1,6 +1,6 @@
 export const AppConfig = {
   applicationName: 'Meow',
-  title: 'Creator',
+  title: 'Admin',
   description: 'Become a meow member',
   keywords: ['Meow'],
   siteUrl: 'https://admin.meowfans.app',
