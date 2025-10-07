@@ -34,3 +34,9 @@ export const GET_ALL_OBJECTS_COUNT_OF_EACH_TYPE = graphql(`
     }
   }
 `);
+
+export const UPDATE_PREVIEW_OF_VAULTS_QUERY = graphql(`
+  mutation UpdatePreviewOfDefaultVaults {
+    updatePreviewOfVaults
+  }
+`);

@@ -6,7 +6,7 @@ interface Props extends React.HtmlHTMLAttributes<HTMLDivElement> {
 
 export const TemplateWrapper: React.FC<Props> = ({ children, ...props }) => {
   return (
-    <div className="w-full py-17 md:pb-0" {...props}>
+    <div className="w-full md:pb-0" {...props}>
       {children}
     </div>
   );

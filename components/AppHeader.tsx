@@ -2,7 +2,8 @@
 
 import { useIsMobile } from '@/hooks/useMobile';
 import { Icons } from '@/lib/icons/Icons';
-import { Div, Typography } from '@/wrappers/HTMLWrappers';
+import { cn } from '@/lib/utils';
+import { Typography } from '@/wrappers/HTMLWrappers';
 import { Menu } from 'lucide-react';
 import { useParams, usePathname } from 'next/navigation';
 import { ApplyHeaderOptions } from './ApplyHeaderOptions';
@@ -21,25 +22,25 @@ export const AppHeader: React.FC<Props> = ({ header }) => {
 
   const _pathname = pathname === `/channels/${channelId}` ? '/channels' : pathname;
 
+  if (_pathname === '/channels') return null;
+
   return (
-    <Div
-      className={`fixed z-50 top-0 left-0 bg-[var(--background)] ${open && 'md:left-64'} ${
-        _pathname === '/channels' ? 'right-64' : 'right-0'
-      } flex flex-row items-center justify-between border-b bg-gradient-to-bl px-2  h-16`}
+    <div
+      className={cn('flex flex-row w-full justify-between border-b bg-gradient-to-bl px-2 h-16 bg-[var(--background)] z-50 sticky top-0')}
     >
-      <Div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row items-center gap-2">
         {!open && !isMobile && (
           <Button onClick={() => setOpen(true)}>
             <Menu />
           </Button>
         )}
         <ReturnToPreviousPage applyReturn />
-        <Div className="cursor-pointer ">{Icons.appIcon()}</Div>
+        <div className="cursor-pointer ">{Icons.appIcon()}</div>
         <Typography className="font-semibold text-xl animate-pulse">{header}</Typography>
-      </Div>
-      <Div className="flex flex-row items-center space-x-3">
+      </div>
+      <div className="flex flex-row items-center space-x-3">
         <ApplyHeaderOptions />
-      </Div>
-    </Div>
+      </div>
+    </div>
   );
 };

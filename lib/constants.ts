@@ -1,15 +1,4 @@
-import {
-  ChartLine,
-  CircleDollarSign,
-  CircleUserRound,
-  CreditCard,
-  GalleryVerticalEnd,
-  Home,
-  Inbox,
-  LucideIcon,
-  Mails,
-  Settings
-} from 'lucide-react';
+import { AudioWaveform, Blocks, Calendar, ChartLine, CircleDollarSign, CircleUserRound, Command, GalleryVerticalEnd, Home, Inbox, LucideIcon, Mails, MessageCircleOff, Settings, Settings2, Trash2 } from 'lucide-react';
 
 export const authenticatedPaths = [
   '/home',
@@ -116,17 +105,29 @@ export const appBottomNavButtonOptions = [
   { icon: CircleUserRound, title: 'Profiles', path: '/profiles' }
 ];
 
-export const appSideBarButtonOptions = [
-  { icon: Home, title: 'Vaults', path: '/vaults' },
-  { icon: Inbox, title: 'Notifications', path: '/notifications' },
-  { icon: Mails, title: 'Messages', path: '/channels' },
-  { icon: GalleryVerticalEnd, title: 'Assets', path: '/assets' },
-  { icon: CircleDollarSign, title: 'Subscriptions', path: '/subscriptions' },
-  { icon: CreditCard, title: ' Add card', path: '/cards' },
-  { icon: CircleUserRound, title: 'Profiles', path: `/profiles` },
-  { icon: Settings, title: 'More', path: '/more' },
-  { icon: ChartLine, title: 'Analytics', path: '/analytics' }
-];
+export const appSideBarButtonOptions = {
+  teams: [
+    { name: 'Admin', logo: Command, plan: 'Enterprise' },
+    { name: 'Creator.', logo: AudioWaveform, plan: 'Startup' },
+    { name: 'Fan', logo: Command, plan: 'Free' }
+  ],
+  navMain: [
+    { title: 'Vaults', url: '/vaults', icon: Home },
+    { title: 'Profiles', url: '/profiles', icon: CircleUserRound },
+    { title: 'Assets', url: '/assets', icon: GalleryVerticalEnd, },
+    { title: 'Analytics', url: '/analytics', icon: ChartLine, badge: '10' },
+    { title: 'Messages', url: '/channels', icon: Mails, badge: '10' }
+  ],
+  navSecondary: [
+    { title: 'Top creators', url: '/top-creators', icon: Calendar },
+    { title: 'Top posts', url: '/top-posts', icon: Settings2 },
+    { title: 'Trending', url: '/trending', icon: Blocks },
+    { title: 'Reports', url: '/reports', icon: MessageCircleOff },
+    { title: 'More', url: '/more', icon: Settings },
+    { title: 'Subscriptions', url: '/subscriptions', icon: CircleDollarSign },
+    { title: 'Notifications', url: '/notifications', icon: Inbox }
+  ]
+};
 
 export const THEME = '_theme';
 

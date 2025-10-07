@@ -104,6 +104,17 @@ export const GET_CREATORS_ASSETS_QUERY = graphql(`
         mimeType
         rawUrl
         updatedAt
+        vaultObject {
+          vault {
+            keywords
+            description
+            id
+          }
+          contentType
+          fileType
+          id
+          status
+        }
       }
       creatorProfile {
         creatorId

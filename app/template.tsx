@@ -1,9 +1,7 @@
 'use client';
 
 import { AppHeader } from '@/components/AppHeader';
-import { ApplyShadCnBackground } from '@/components/ApplyShadcnBackground';
 import { authenticatedPaths } from '@/lib/constants';
-import { Div } from '@/wrappers/HTMLWrappers';
 import { useParams, usePathname } from 'next/navigation';
 
 interface Props {
@@ -19,12 +17,12 @@ export default function RootTemplate({ children }: Props) {
       pathname
     )
   )
-    return <Div>{children}</Div>;
+    return <div>{children}</div>;
 
   return (
-    <Div>
+    <div>
       <AppHeader />
-      <ApplyShadCnBackground>{children}</ApplyShadCnBackground>
-    </Div>
+      {children}
+    </div>
   );
 }

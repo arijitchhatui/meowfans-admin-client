@@ -20,4 +20,4 @@ export const ChannelHeader = () => {
       </Div>
     </Div>
   );
-};  
+};
