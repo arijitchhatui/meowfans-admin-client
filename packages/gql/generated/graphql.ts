@@ -235,7 +235,8 @@ export enum DocumentQualityType {
   DefaultDefinition = 'DEFAULT_DEFINITION',
   DivDefinition = 'DIV_DEFINITION',
   HighDefinition = 'HIGH_DEFINITION',
-  LowDefinition = 'LOW_DEFINITION'
+  LowDefinition = 'LOW_DEFINITION',
+  SourceDefinition = 'SOURCE_DEFINITION'
 }
 
 export type DownloadAllCreatorObjectsAsBatchInput = {
