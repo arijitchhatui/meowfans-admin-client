@@ -228,6 +228,7 @@ export const ImportSingleCreatorSheet = () => {
                       <DropdownMenuRadioItem value={DocumentQualityType.HighDefinition}>High</DropdownMenuRadioItem>
                       <DropdownMenuRadioItem value={DocumentQualityType.LowDefinition}>Low</DropdownMenuRadioItem>
                       <DropdownMenuRadioItem value={DocumentQualityType.DivDefinition}>Div</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value={DocumentQualityType.SourceDefinition}>Source</DropdownMenuRadioItem>
                       <DropdownMenuRadioItem value={DocumentQualityType.DefaultDefinition}>Default</DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
                   </DropdownMenuContent>

@@ -257,6 +257,9 @@ export const ImportCreatorsSheet = () => {
                       <DropdownMenuRadioItem className="text-xs" value={DocumentQualityType.DivDefinition}>
                         Div
                       </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem className="text-xs" value={DocumentQualityType.SourceDefinition}>
+                        Source
+                      </DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
                   </DropdownMenuContent>
                 </DropdownMenu>
