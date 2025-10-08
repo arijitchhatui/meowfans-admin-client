@@ -913,6 +913,7 @@ export type PaginationInput = {
   relatedEntityId?: InputMaybe<Scalars['ID']['input']>;
   relatedUserId?: InputMaybe<Scalars['String']['input']>;
   role?: InputMaybe<UserRoles>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   status?: DownloadStates;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -1078,6 +1079,7 @@ export type Query = {
   getPosts: Array<PostsEntity>;
   getPostsInfo: Array<GetPostsInfoOutput>;
   getRestrictedUsers: Array<CreatorRestrictsEntity>;
+  getTags: Array<TagsEntity>;
   getTotalObjectsAsType: Scalars['Int']['output'];
   getUser: GetUserOutput;
   getVaultObjectsByVaultId: GetDefaultVaultObjectsOutput;
@@ -1204,6 +1206,11 @@ export type QueryGetRestrictedUsersArgs = {
 };
 
 
+export type QueryGetTagsArgs = {
+  input: PaginationInput;
+};
+
+
 export type QueryGetTotalObjectsAsTypeArgs = {
   input: PaginationInput;
 };
@@ -1304,6 +1311,12 @@ export type SubscriptionsEntity = {
   subscriptionPlan: SubscriptionPlansEntity;
   subscriptionPlanId: Scalars['String']['output'];
   syncedAt: Scalars['DateTime']['output'];
+};
+
+export type TagsEntity = {
+  __typename?: 'TagsEntity';
+  id: Scalars['String']['output'];
+  label: Scalars['String']['output'];
 };
 
 export type UnFollowCreatorInput = {
