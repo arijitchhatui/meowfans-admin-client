@@ -197,6 +197,11 @@ export type CreatorRestrictsEntity = {
   unRestrictedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export enum DataFetchType {
+  InfiniteScroll = 'InfiniteScroll',
+  Pagination = 'Pagination'
+}
+
 export type DeleteCommentInput = {
   commentId: Scalars['String']['input'];
   postId: Scalars['String']['input'];
@@ -435,11 +440,11 @@ export type GetDefaultAssetsOutput = {
 
 export type GetDefaultCreatorsOutput = {
   __typename?: 'GetDefaultCreatorsOutput';
-  count: Scalars['Int']['output'];
+  count?: Maybe<Scalars['Int']['output']>;
   creators: Array<UsersEntity>;
-  hasNext: Scalars['Boolean']['output'];
-  hasPrev: Scalars['Boolean']['output'];
-  totalPages: Scalars['Int']['output'];
+  hasNext?: Maybe<Scalars['Boolean']['output']>;
+  hasPrev?: Maybe<Scalars['Boolean']['output']>;
+  totalPages?: Maybe<Scalars['Int']['output']>;
 };
 
 export type GetDefaultVaultObjectsOutput = {
@@ -454,10 +459,10 @@ export type GetDefaultVaultObjectsOutput = {
 
 export type GetDefaultVaultsOutput = {
   __typename?: 'GetDefaultVaultsOutput';
-  count: Scalars['Int']['output'];
-  hasNext: Scalars['Boolean']['output'];
-  hasPrev: Scalars['Boolean']['output'];
-  totalPages: Scalars['Int']['output'];
+  count?: Maybe<Scalars['Int']['output']>;
+  hasNext?: Maybe<Scalars['Boolean']['output']>;
+  hasPrev?: Maybe<Scalars['Boolean']['output']>;
+  totalPages?: Maybe<Scalars['Int']['output']>;
   vaults: Array<VaultsEntity>;
 };
 
@@ -906,6 +911,7 @@ export type MutationUploadVaultArgs = {
 
 export type PaginationInput = {
   assetType?: InputMaybe<AssetType>;
+  dataFetchType?: InputMaybe<DataFetchType>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<SortOrder>;
